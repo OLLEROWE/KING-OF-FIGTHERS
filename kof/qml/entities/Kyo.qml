@@ -49,7 +49,7 @@ EntityBase {
             update_control()
             render()
             if(conn.getMessage() !== "")
-                console.log("-----" + conn.getMessage())
+                console.log("player2 pressed :-----" + conn.getMessage())
         }
     }
 
