@@ -146,8 +146,7 @@ Scene {
     Connections{
         target:player1
         function onKeysChanged(){
-//            conn.sendMessage(player1.pressed_keys)
-        console.log(player1.settoString(player1.pressed_keys))
+        conn.sendMessage(player1.settoString(player1.pressed_keys))
         }
     }
 
