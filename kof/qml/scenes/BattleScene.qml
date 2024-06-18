@@ -61,7 +61,7 @@ Scene {
     Kyo{
         id:player2
         x:3*scene.width/4 - width
-        //anchors.bottom: land.top
+        anchors.bottom: land.top
         isLeftPlayer: false
     }
 
@@ -149,6 +149,44 @@ Scene {
             console.log("player pressed :-----" + player1.settoString(player1.pressed_keys))
             conn.sendMessage(player1.settoString(player1.pressed_keys))
         }
+    }
+    property var keys: new Set
+    Connections{
+        target:conn
+        function onTargetMessageChanged(){
+            keys.clear()
+            let msg = conn.targetMessage
+            let parts = msg.split("|")
+            for(let i = 0;i<parts.length;i++)
+                addKey(parts[i])
+//            console.log("keys.size:",keys.size)
+
+            player2.pressed_keys = keys
+//            if(player2.pressed_keys.size === 0)
+//                console.log("player2.pressed_keys.size === 0")
+//            player2.pressed_keys.forEach(function(key) {
+//                console.log("keys---" + key)
+//            });
+        }
+    }
+    function addKey(part){
+        if(part == 68)
+            keys.add(Qt.Key_A)
+        else if(part == 87)
+            keys.add(Qt.Key_W)
+        else if(part == 65)
+            keys.add(Qt.Key_D)
+        else if(part == 83)
+            keys.add(Qt.Key_S)
+        else if(part == 85)
+            keys.add(Qt.Key_U)
+        else if(part == 73)
+            keys.add(Qt.Key_I)
+        else if(part == 74)
+            keys.add(Qt.Key_J)
+        else if(part == 75)
+            keys.add(Qt.Key_K)
+
     }
 
 }

@@ -27,7 +27,7 @@ Scene {
             text:"确定"
             onClicked:{
                 connect()
-                setTargetIpAndPort(targetIp.text,targetPort.port)
+                conn.setTargetIpAndPort(targetIp.text,targetPort.text)
             }
         }
 
