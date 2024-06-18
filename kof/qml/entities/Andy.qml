@@ -19,6 +19,7 @@ EntityBase {
     property bool hp: false
     property bool ll: false
     property bool hl: false
+    signal keysChange()
     GameAnimatedSprite{
         id:gameSprite
         mirrorX: !isLeftPlayer ? true : false
@@ -36,9 +37,9 @@ EntityBase {
 
     focus:true
     Keys.onPressed:
-        (e)=>{pressed_keys.add(e.key)}
+        (e)=>{pressed_keys.add(e.key);keysChange()}
     Keys.onReleased:
-        (e)=>{pressed_keys.delete(e.key)}
+        (e)=>{pressed_keys.delete(e.key);keysChange()}
     Timer{
         running: true
         repeat: true
@@ -168,16 +169,13 @@ EntityBase {
             status = 1
         }
         if(status === 5 && gameSprite.currentFrame === gameSprite.frameCount - 3){
-            gameSprite.currentFrame = gameSprite.frameCount - 3
             gameSprite.running = false
         }
         if(toFive.includes(status) && gameSprite.currentFrame === gameSprite.frameCount - 1){
             status = 5
+            gameSprite.currentFrame =  count[status] - 3
             gameSprite.running = false
-            if(status === 19)
-                gameSprite.currentFrame =  count[status] - 1
-            else
-                gameSprite.currentFrame =  count[status] - 2
+
 
         }
         if(status === 20 && gameSprite.currentFrame === gameSprite.frameCount - 1){
