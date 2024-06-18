@@ -2,7 +2,8 @@
 #include <FelgoApplication>
 
 #include <QQmlApplicationEngine>
-
+#include <conn.h>
+#include <QQmlContext>
 // uncomment this line to add the Live Client Module and use live reloading with your custom C++ code
 //#include <FelgoLiveClient>
 
@@ -33,11 +34,12 @@ int main(int argc, char *argv[])
     // also see the .pro file for more details
     //felgo.setMainQmlFileName(QStringLiteral("qrc:/qml/Main.qml"));
     felgo.setContentScaleAndFileSelectors(1);
+    Conn conn;
+    engine.rootContext()->setContextProperty("conn",&conn);
     engine.load(QUrl(felgo.mainQmlFileName()));
-
     // to start your project as Live Client, comment (remove) the lines "felgo.setMainQmlFileName ..." & "engine.load ...",
+//    engine.loadFromModule("io.qt.examples.kof", "Main");
     // and uncomment the line below
     //FelgoLiveClient client (&engine);
-
     return app.exec();
 }

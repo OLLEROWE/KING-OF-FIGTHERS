@@ -1,11 +1,11 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.27)
 
 project(kof VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Felgo REQUIRED)
+find_package(Felgo  REQUIRED)
 
 # Project identifier and version
 # More information: https://felgo.com/doc/felgo-publishing/#project-configuration
@@ -25,6 +25,7 @@ set(PRODUCT_LICENSE_KEY "")
 set(FELGO_PLUGINS
 )
 
+
 # Find all QML/JS files for the QML compiler:
 file(GLOB_RECURSE QmlFiles RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} qml/*.qml qml/*.js)
 
@@ -34,8 +35,8 @@ list(REMOVE_ITEM AssetsFiles ${QmlFiles})
 
 qt_add_executable(appkof
     main.cpp
-    connections.cpp
-    connections.h
+    conn.cpp
+    conn.h
     ${QmlFiles}
     ${AssetsFiles}
 )
@@ -48,9 +49,10 @@ deploy_resources("${QmlFiles};${AssetsFiles}")
 
 # Add QML files and resources to QML module to included them via QRC automatically:
 qt_add_qml_module(appkof
-    URI kof
+    URI  io.qt.examples.kof
     VERSION 1.0
 # uncomment for publishing:
+
 #    QML_FILES ${QmlFiles}
 #    RESOURCES ${AssetsFiles}
     NO_RESOURCE_TARGET_PATH
