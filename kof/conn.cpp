@@ -15,14 +15,6 @@ Conn::Conn(QObject *parent)
 void Conn::sendMessage(QString msg)
 {
     QByteArray data = msg.toUtf8();
-//    if (ip == "") {
-//        udpSocket->writeDatagram(str, QHostAddress::Broadcast, port);
-//        qDebug() << "QHostAddress::Broadcast";
-//    } else {
-//        QString targetIP = ip;
-//        QHostAddress targetAddr(targetIP);
-//        udpSocket->writeDatagram(str, targetAddr, port); //发出数据报
-//    }
     if(!m_targetIp.isEmpty()){
         QHostAddress targetAddr(m_targetIp);
         m_udpSocket->writeDatagram(data, targetAddr, m_targetPort); //发出数据报
@@ -41,6 +33,13 @@ QString Conn::getIp()
         if (i != QHostAddress::LocalHost && i.protocol() == QAbstractSocket::IPv4Protocol)
             return i.toString();
     return "";
+}
+
+void Conn::setTargetIpAndPort(const QString &ip, const int &port)
+{
+    m_targetIp = ip;
+    m_targetPort = port;
+    qDebug() << m_targetIp << m_targetPort;
 }
 
 void Conn::onSocketReadyRead()
