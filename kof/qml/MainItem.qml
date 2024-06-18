@@ -7,13 +7,13 @@ Rectangle{
     Loader{
         id:loader
         anchors.fill: parent
-        source: "scenes/StartScene.qml"
+        source: "scenes/ConnectionScene.qml"
         focus:true
     }
     Connections{
         target: loader.item
-        function onStartGame(){
-            loader.source = "scenes/ConnectionScene.qml"
+        function onConnect(){
+            loader.source = "scenes/BattleScene.qml"
         }
     }
 }
