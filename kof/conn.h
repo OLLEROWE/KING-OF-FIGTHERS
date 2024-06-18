@@ -11,10 +11,10 @@ class Conn : public QObject
 public:
     explicit Conn(QObject *parent = nullptr);
     void onSocketReadyRead();
-    void sendMessage(QString msg = "");
+    Q_INVOKABLE void sendMessage(QString msg = "");
     Q_INVOKABLE QString getIp();
     QString getUserName();
-    QString getMessage();
+    Q_INVOKABLE QString getMessage();
     Q_INVOKABLE void setTargetIpAndPort(const QString &ip,const int &port);
 signals:
 

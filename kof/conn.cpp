@@ -35,6 +35,11 @@ QString Conn::getIp()
     return "";
 }
 
+QString Conn::getMessage()
+{
+    return m_targetMessage;
+}
+
 void Conn::setTargetIpAndPort(const QString &ip, const int &port)
 {
     m_targetIp = ip;
