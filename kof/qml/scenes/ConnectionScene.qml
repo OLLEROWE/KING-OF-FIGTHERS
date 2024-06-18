@@ -8,22 +8,27 @@ import "../common"
 
 Scene {
     anchors.fill: parent
+    signal connect()
     RowLayout{
         spacing: 50
         anchors.centerIn: parent
         TextField{
-
-            text:"-00000"
+            text:conn.getIp()
         }
         TextField{
-            text:"-00000"
+            id:targetIp
+            text:conn.getIp()
         }
         TextField{
-            text:"-00000"
+            id:targetPort
+            text:"45454"
         }
         Button{
             text:"确定"
-
+            onClicked:{
+                connect()
+                setTargetIpAndPort(targetIp.text,targetPort.port)
+            }
         }
 
     }

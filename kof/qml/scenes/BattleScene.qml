@@ -50,7 +50,7 @@ Scene {
         id:land
         anchors.bottom: parent.bottom
     }
-    Andy{
+    Kyo{
         id:player1
         x:scene.width/4
         anchors.bottom: land.top
@@ -58,7 +58,7 @@ Scene {
         twoAxisController.xAxis: joystickController.controllerXPosition
         twoAxisController.yAxis: joystickController.controllerYPosition
     }
-    Player{
+    Kyo{
         id:player2
         x:3*scene.width/4 - width
         //anchors.bottom: land.top
@@ -143,5 +143,12 @@ Scene {
     }
 
     Keys.forwardTo:[player1]
+    Connections{
+        target:player1
+        function onKeysChanged(){
+//            conn.sendMessage(player1.pressed_keys)
+        console.log(player1.settoString(player1.pressed_keys))
+        }
+    }
 
 }
