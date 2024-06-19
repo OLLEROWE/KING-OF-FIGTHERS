@@ -35,16 +35,25 @@ QString Conn::getIp()
     return "";
 }
 
-QString Conn::getMessage()
-{
-    return m_targetMessage;
-}
 
 void Conn::setTargetIpAndPort(const QString &ip, const int &port)
 {
     m_targetIp = ip;
     m_targetPort = port;
     qDebug() << m_targetIp << m_targetPort;
+}
+
+QString Conn::targetMessage() const
+{
+    return m_targetMessage;
+}
+
+void Conn::setTargetMessage(const QString &newTargetMessage)
+{
+    if (m_targetMessage == newTargetMessage)
+        return;
+    m_targetMessage = newTargetMessage;
+    emit targetMessageChanged();
 }
 
 void Conn::onSocketReadyRead()
@@ -60,7 +69,8 @@ void Conn::onSocketReadyRead()
         quint16 peerPort;
         m_udpSocket->readDatagram(datagram.data(),datagram.size(),&peerAddr,&peerPort);
         QString str=datagram.data();
-        m_targetMessage = "[From ---" + peerAddr.toString() + "---:" + QString::number(peerPort) + "] ";
+        setTargetMessage(str);
+        /*"[From ---" + peerAddr.toString() + "---:" + QString::number(peerPort) + "] ";*/
     }
 }
 
