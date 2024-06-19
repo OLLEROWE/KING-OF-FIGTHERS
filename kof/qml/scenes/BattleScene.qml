@@ -141,32 +141,42 @@ Scene {
             onReleased: player1.hl = false
         }
     }
-
+    property var keys: new Set
+    property string sent_keys: ""
     Keys.forwardTo:[player1]
     Connections{
-        target:player1
+        target: player1
         function onKeysChanged(){
-            console.log("player pressed :-----" + player1.settoString(player1.pressed_keys))
-            conn.sendMessage(player1.settoString(player1.pressed_keys))
+            sent_keys = ""
+            player1.pressed_keys.forEach(function(key) {
+                sent_keys += key + "|"
+            });
+            conn.sendMessage(sent_keys)
         }
     }
-    property var keys: new Set
+    Connections{
+        target: joystickController
+    }
+
+
     Connections{
         target:conn
         function onTargetMessageChanged(){
+            console.log("onTargetMessageChanged")
+
             keys.clear()
             let msg = conn.targetMessage
             let parts = msg.split("|")
             for(let i = 0;i<parts.length;i++)
                 addKey(parts[i])
-//            console.log("keys.size:",keys.size)
+            console.log("keys.size:",keys.size)
 
             player2.pressed_keys = keys
-//            if(player2.pressed_keys.size === 0)
-//                console.log("player2.pressed_keys.size === 0")
-//            player2.pressed_keys.forEach(function(key) {
-//                console.log("keys---" + key)
-//            });
+            if(player2.pressed_keys.size === 0)
+                console.log("player2.pressed_keys.size === 0")
+            player2.pressed_keys.forEach(function(key) {
+                console.log("keys---" + key)
+            });
         }
     }
     function addKey(part){
