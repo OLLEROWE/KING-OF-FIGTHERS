@@ -3,6 +3,7 @@
 #include <QHostAddress>
 #include <QByteArray>
 #include <QDataStream>
+#include <QHostInfo>
 Conn::Conn(QObject *parent)
     : QObject{parent}
 {
@@ -19,7 +20,6 @@ void Conn::sendMessage(QString msg)
         QHostAddress targetAddr(m_targetIp);
         m_udpSocket->writeDatagram(data, targetAddr, m_targetPort); //发出数据报
     }
-
 }
 
 QString Conn::getIp()
@@ -33,6 +33,11 @@ QString Conn::getIp()
         if (i != QHostAddress::LocalHost && i.protocol() == QAbstractSocket::IPv4Protocol)
             return i.toString();
     return "";
+}
+
+QString Conn::getUserName()
+{
+    return QHostInfo::localHostName();
 }
 
 

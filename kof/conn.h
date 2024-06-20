@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QUdpSocket>
 #include <QQmlEngine>
+
 class Conn : public QObject
 {
     Q_OBJECT
@@ -14,7 +15,7 @@ public:
     void onSocketReadyRead();
     Q_INVOKABLE void sendMessage(QString msg = "");
     Q_INVOKABLE QString getIp();
-    QString getUserName();
+    Q_INVOKABLE QString getUserName();
     Q_INVOKABLE void setTargetIpAndPort(const QString &ip,const int &port);
     QString targetMessage() const;
     void setTargetMessage(const QString &newTargetMessage);
@@ -25,9 +26,9 @@ signals:
 
 private:
     QUdpSocket *m_udpSocket;
-    int m_port = 45454;
+    int m_port = 6666;
     QString m_targetIp;
-    int m_targetPort = 45454;
+    int m_targetPort = 6666;
     QString m_targetMessage = "";
 
 };
