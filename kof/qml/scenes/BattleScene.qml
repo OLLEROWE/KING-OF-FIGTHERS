@@ -3,20 +3,24 @@ import QtQuick.Controls
 import Felgo
 import "../entities"
 import "../common"
-
-
+import "controller.js" as Controller
 Scene {
     property alias scene: scene
-//    property alias player1: player1
     id: scene
     anchors.fill: parent
+
+    Component.onCompleted:{
+        Controller.players[0] = player1
+        Controller.players[1] = player2
+    }
+    Component.onDestruction:Controller.players.length = 0
     JoystickControllerHUD{
         id:joystickController
         x:100
         y: parent.height - height -50
         width: 150
         height: 150
-        visible: !system.desktopPlatform
+//        visible: !system.desktopPlatform
         z:scene.z + 1
         opacity:0.5
         source: "../../assets/img/joystick_background.png"
@@ -33,13 +37,13 @@ Scene {
         gravity.y: 9.81 * 3
         z: 10 // draw the debugDraw on top of the entities
 
-        // these are performance settings to avoid boxes colliding too far together
-        // set them as low as possible so it still looks good
+//         these are performance settings to avoid boxes colliding too far together
+//         set them as low as possible so it still looks good
         updatesPerSecondForPhysics: 60
         velocityIterations: 5
         positionIterations: 5
-        // set this to true to see the debug draw of the physics system
-        // this displays all bodies, joints and forces which is great for debugging
+//         set this to true to see the debug draw of the physics system
+//         this displays all bodies, joints and forces which is great for debugging
         debugDrawVisible: false
     }
     BackGround{
@@ -50,6 +54,8 @@ Scene {
         id:land
         anchors.bottom: parent.bottom
     }
+
+
     Kyo{
         id:player1
         x:scene.width/4
@@ -63,84 +69,35 @@ Scene {
         x:3*scene.width/4 - width
         anchors.bottom: land.top
         isLeftPlayer: false
+//        direction:-1
+    }
+    Rectangle{
+        id:idelAttcakForFist
+        x:player1.x + player1.width - width -10
+        y:player1.y + 24
+        color:"red"
+        width: 20
+        height: 20
+    }
+    Rectangle{
+        id:idelAttcakForHLeg
+        x:player1.x + player1.width - width - 10
+        y:idelAttcakForFist.y + 20
+        color:"yellow"
+        width: 20
+        height: 40
+    }
+    Rectangle{
+        id:idelAttcakForLLeg
+        x:player1.x + player1.width - width
+        y:player1.y + 3* player1.height/4
+        color:"blue"
+        width: 20
+        height: 20
     }
 
-    Rectangle{
-        width: 50
-        height: 50
-        color:"red"
-        radius: 25
-        x:scene.width - 200
-        y:scene.height - 300
-        opacity:0.5
-        visible: !system.desktopPlatform
-        Text {
-            text: qsTr("lp")
-            anchors.centerIn: parent
-        }
-        MouseArea{
-            anchors.fill: parent
-            onPressed: player1.lp = true
-            onReleased: player1.lp = false
-        }
-    }
-    Rectangle{
-        width: 50
-        height: 50
-        color:"red"
-        radius: 25
-        x:scene.width - 240
-        y:scene.height - 250
-        opacity:0.5
-        visible: !system.desktopPlatform
-        Text {
-            text: qsTr("hp")
-            anchors.centerIn: parent
-        }
-        MouseArea{
-            anchors.fill: parent
-            onPressed: player1.hp = true
-            onReleased: player1.hp = false
-        }
-    }
-    Rectangle{
-        width: 50
-        height: 50
-        color:"red"
-        radius: 25
-        x:scene.width - 280
-        y:scene.height - 200
-        opacity:0.5
-        visible: !system.desktopPlatform
-        Text {
-            text: qsTr("ll")
-            anchors.centerIn: parent
-        }
-        MouseArea{
-            anchors.fill: parent
-            onPressed: player1.ll = true
-            onReleased: player1.ll = false
-        }
-    }
-    Rectangle{
-        width: 50
-        height: 50
-        color:"red"
-        radius: 25
-        x:scene.width - 320
-        y:scene.height - 150
-        opacity:0.5
-        visible: !system.desktopPlatform
-        Text {
-            text: qsTr("hl")
-            anchors.centerIn: parent
-        }
-        MouseArea{
-            anchors.fill: parent
-            onPressed: player1.hl = true
-            onReleased: player1.hl = false
-        }
-    }
+
+
     property var keys: new Set
     property string sent_keys: ""
     Keys.forwardTo:[player1]
@@ -153,30 +110,38 @@ Scene {
             });
             conn.sendMessage(sent_keys)
         }
-    }
-    Connections{
-        target: joystickController
+        function onPositionChanged(){
+            sent_keys = ""
+            if(player1.twoAxisController.xAxis > 0.6)
+                sent_keys += 68 + "|"
+            else if(player1.twoAxisController.xAxis < -0.6)
+                sent_keys += 65 + "|"
+            else if(player1.twoAxisController.yAxis > 0.6)
+                sent_keys += 87 + "|"
+            else if(player1.twoAxisController.yAxis < -0.6)
+                sent_keys += 83 + "|"
+
+            conn.sendMessage(sent_keys)
+        }
     }
 
 
     Connections{
         target:conn
         function onTargetMessageChanged(){
-            console.log("onTargetMessageChanged")
-
             keys.clear()
             let msg = conn.targetMessage
             let parts = msg.split("|")
             for(let i = 0;i<parts.length;i++)
                 addKey(parts[i])
-            console.log("keys.size:",keys.size)
+//            console.log("k*rt00000000000000000000000fi-ueys.size:",keys.size)
 
             player2.pressed_keys = keys
-            if(player2.pressed_keys.size === 0)
-                console.log("player2.pressed_keys.size === 0")
-            player2.pressed_keys.forEach(function(key) {
-                console.log("keys---" + key)
-            });
+//            if(player2.pressed_keys.size === 0)
+//                console.log("player2.pressed_keys.size === 0")
+//            player2.pressed_keys.forEach(function(key) {
+//                console.log("keys---" + key)
+//            });
         }
     }
     function addKey(part){
