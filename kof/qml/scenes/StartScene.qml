@@ -7,8 +7,7 @@ import "../common"
 
 Scene {
     id: startScene
-    signal startGame
-    signal openSettings
+    property Loader loaderContext
     anchors.fill: parent
     function getRandomInt(min, max) {
         min = Math.ceil(min);
@@ -50,9 +49,17 @@ Scene {
                             id: startButton
                             width: menuColumn.width
                             text: "开始游戏"
-                            onClicked: startGame()
+                            onClicked:{
+                            if (startScene.loaderContext) {
+                                 startScene.loaderContext.source = "scenes/ConnectionScene.qml";
+                                }
+                             }
                             focus: true
-                            Keys.onReturnPressed: startGame()
+                            Keys.onReturnPressed:{
+                                if (startScene.loaderContext) {
+                                    startScene.loaderContext.source = "scenes/ConnectionScene.qml";
+                                   }
+                                }
                         }
 
                         // "设置"
@@ -60,8 +67,17 @@ Scene {
                             id: settingsButton
                             width: menuColumn.width
                             text: "设置"
-                            onClicked: openSettings()
-                            Keys.onReturnPressed: openSettings()
+                            onClicked:{
+                                if (startScene.loaderContext) {
+                                     startScene.loaderContext.source = "scenes/SettingsScene.qml";
+                                }
+                            }
+                            Keys.onReturnPressed: {
+                                if (startScene.loaderContext) {
+                                     startScene.loaderContext.source = "scenes/SettingsScene.qml";
+                                }
+                            }
+
                             KeyNavigation.down: exitButton
                             KeyNavigation.up: startButton
                         }
