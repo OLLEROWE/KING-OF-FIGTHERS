@@ -1,31 +1,30 @@
 import QtQuick
 import Felgo
-import "play.js" as Controlplay
+import "controller.js" as Controller
 EntityBase {
     id: player
     entityType: "player"
-    scale: 2
-    width: gameSprite.width * 2
-    height: gameSprite.height * 2
+    scale: 1.5
+    width: gameSprite.width * scale
+    height: gameSprite.height * scale
     property alias collider: _collider
-    property alias gamesprite:gameSprite
-    property alias twoAxisController : _twoAxisController
     property var pressed_keys: new Set
     property int speedx: 400
     property int speedy: 400
-
+    property alias twoAxisController : _twoAxisController
+    property alias gameSprite: gameSprite
     property bool isLeftPlayer: true
+    property int direction: 1
     property int status: 1
     property int timedelta: 10
-    property bool lp: false
-    property bool hp: false
-    property bool ll: false
-    property bool hl: false
-    property var frameary:[0, 12, 8, 8, 13, 6, 4, 5, 7, 7, 13, 12, 13, 12, 4, 4, 5, 4]
-    signal keysChange()
+    property int hp: 100
+    property var count : [0, 12, 8, 8, 13, 6, 4, 5, 7, 7, 13, 12, 13, 12, 4, 4, 5, 4]
+
+
+    signal keysChanged()
     GameAnimatedSprite{
         id:gameSprite
-        mirrorX: !isLeftPlayer ? true : false
+        mirrorX: direction === -1 ? true : false
 
         interpolate:false
     }
@@ -40,28 +39,31 @@ EntityBase {
 
     focus:true
     Keys.onPressed:
-        (e)=>{pressed_keys.add(e.key);keysChange()}
+        (e)=>{pressed_keys.add(e.key);keysChanged()}
     Keys.onReleased:
-        (e)=>{pressed_keys.delete(e.key);keysChange()}
+        (e)=>{pressed_keys.delete(e.key);keysChanged()}
     Timer{
         running: true
         repeat: true
         interval: 50
         onTriggered: {
-            Controlplay.update_move()
-            Controlplay.update_control()
-            Controlplay.render(frameary)
+            Controller.update_move(player)
+            Controller.update_control(player)
+            Controller.update_attack(player)
+            Controller.update_direction(player)
+            Controller.render(player,image,count)
+            if(player.status === 20 && player.gameSprite.currentFrame === player.gameSprite.frameCount - 1){
+                player.gameSprite.running = false
+                player.collider.bodyType = Body.Static
+            }
         }
     }
-
-
     Image{
         id:image
-        source: Controlplay.update_image("goro")
+        source: update_image()
         visible: false
     }
-
-
-
-
+    function update_image(){
+        return "../../assets/img/goro/" + status + ".png"
+    }
 }
