@@ -23,11 +23,78 @@ GameWindow {
     screenHeight: 640
 
 
+    state: "menu"
+       StartScene {
+           id: startScene
+           visible: true // 初始状态为 "menu" 时可见
+           onStartGame: gameWindow.state = "connection"
+           onOpenSettings: gameWindow.state = "setting"
+           onExit: Qt.quit()
+       }
+       ConnectionScene{
+            id:connectionScene
+            visible: false
+            onSelection:gameWindow.state="selection"
 
+       }
+       SelectScene{
+           id:selectScene
+           visible: false
+           onStartBattle:gameWindow.state="game"
 
-    MainItem{
+       }
+       BattleScene {
+           id:battleScene;
+           visible: false
+       }
 
-    }
+       SettingsScene{
+           id:settingsScene;
+           visible: false
+           onGoStartScene:gameWindow.state = "menu"
+       }
+       states: [
+           State {
+               name: "menu"
+               PropertyChanges { target: startScene; visible: true }
+               PropertyChanges { target: connectionScene; visible: false }
+               PropertyChanges { target: selectScene; visible: false }
+               PropertyChanges { target: battleScene; visible: false }
+               PropertyChanges { target: settingsScene; visible: false }
+           },
+           State {
+               name: "connection"
+               PropertyChanges { target: startScene; visible: false }
+               PropertyChanges { target: connectionScene; visible: true }
+               PropertyChanges { target: selectScene; visible: false }
+               PropertyChanges { target: battleScene; visible: false }
+               PropertyChanges { target: settingsScene; visible: false }
+           },
+           State {
+               name: "selection"
+               PropertyChanges { target: startScene; visible: false }
+               PropertyChanges { target: connectionScene; visible: false }
+               PropertyChanges { target: selectScene; visible: true }
+               PropertyChanges { target: battleScene; visible: false }
+               PropertyChanges { target: settingsScene; visible: false }
+           },
+           State {
+               name: "game"
+               PropertyChanges { target: startScene; visible: false }
+               PropertyChanges { target: connectionScene; visible: false }
+               PropertyChanges { target: selectScene; visible: false }
+               PropertyChanges { target: battleScene; visible: true;focus:true }
+               PropertyChanges { target: settingsScene; visible: false }
+           },
+           State {
+               name: "setting"
+               PropertyChanges { target: startScene; visible: false }
+               PropertyChanges { target: connectionScene; visible: false }
+               PropertyChanges { target: selectScene; visible: false }
+               PropertyChanges { target: battleScene; visible: false }
+               PropertyChanges { target: settingsScene; visible: true }
+           }
+       ]
 
 //    Loader{
 //        id:mainLoader

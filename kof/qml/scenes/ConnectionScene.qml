@@ -9,11 +9,11 @@ Scene {
     id: connectionScene
     anchors.fill: parent
     property Loader loaderContext  // 接收 Loader 作为上下文
-    signal fightStart()
+    signal selection()
     RowLayout{
         spacing: 50
         anchors.centerIn: parent
-        TextField{
+                TextField{
                     text:conn.getUserName()
                     enabled: false
                 }
@@ -28,16 +28,17 @@ Scene {
         Button{
             text:"确定"
             onClicked:{
-                fightStart()//触发 fightStart 信号
+                selection()//触发信号
                 conn.setTargetIpAndPort(targetIp.text,6666)
             }
             Keys.onReturnPressed: {
-                fightStart()//触发 fightStart 信号
+                selection()//触发信号
                 conn.setTargetIpAndPort(targetIp.text,6666)
             }
         }
 
     }
+    /*
     Connections {
           target: connectionScene  // 监听本地信号
           onFightStart: {
@@ -46,4 +47,5 @@ Scene {
               }
           }
       }
+      */
 }
