@@ -12,6 +12,7 @@ Scene {
     Component.onCompleted:{
         Controller.players[0] = player1
         Controller.players[1] = player2
+
     }
     Component.onDestruction:Controller.players.length = 0
     JoystickControllerHUD{
@@ -54,6 +55,38 @@ Scene {
         id:land
         anchors.bottom: parent.bottom
     }
+    property string player1SelectionName: "Kyo.qml"
+    property string player2SelectionName: "Kyo.qml"
+
+    function createCharacters() {
+        // 创建角色1
+        var player1Character = createCharacter(player1SelectionName, scene.width / 4, true)
+
+        // 创建角色2
+        var player2Character = createCharacter(player2SelectionName, 3 * scene.width / 4 - player2Character.width, false)
+
+        // 添加到场景中
+        scene.addItem(player1Character)
+        scene.addItem(player2Character)
+    }
+    function createCharacter(characterName, xPosition, isPlayer1) {
+        var component = Qt.createComponent(characterName)
+        if (component.status === Component.Ready) {
+            var character = component.createObject(scene, {
+                                                       id: isPlayer1 ? "player1" : "player2",
+                                                       x: xPosition,
+                                                       anchors:{bottom: land.top
+                                                       }
+                                                       // 其他属性设置
+                                                   })
+            return character
+        } else {
+            console.error("Failed to create", characterName, ":", component.errorString())
+            return null
+        }
+
+    }
+
 
 
     Kyo{
@@ -64,7 +97,7 @@ Scene {
         twoAxisController.xAxis: joystickController.controllerXPosition
         twoAxisController.yAxis: joystickController.controllerYPosition
     }
-    Andy{
+    Kyo{
         id:player2
         x:3*scene.width/4 - width
         anchors.bottom: land.top
