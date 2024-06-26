@@ -14,12 +14,12 @@ EntityBase {
     property alias twoAxisController : _twoAxisController
     property alias gameSprite: gameSprite
     property bool isLeftPlayer: true
+    property alias timer: _timer
     property int direction: 1
     property int status: 1
     property int timedelta: 10
     property int hp: 100
-    property var count : [0, 56, 5, 5, 13, 4, 7, 8, 4, 11, 15, 15, 16, 15, 4, 4, 7, 8, 8, 0, 21, 35,15,15,16,14,24,23,21,24,72,4,4,15]
-    property var combos: []
+    property var count : [0, 56, 5, 5, 13, 4, 7, 8, 4, 11, 15, 15, 16, 15, 4, 4, 7, 8, 8, 0, 21, 35,15,15,16,14,24,21,21,24,72,4,4,15]
     signal keysChanged()
     signal positionChanged()
     GameAnimatedSprite{
@@ -31,7 +31,7 @@ EntityBase {
     BoxCollider {
         id:_collider
         anchors.fill: player
-        bodyType: Body.Kinematic
+        bodyType: Body.Dynamic
     }
     TwoAxisController {
         id: _twoAxisController
@@ -45,6 +45,7 @@ EntityBase {
     Keys.onReleased:
         (e)=>{pressed_keys.delete(e.key);keysChanged()}
     Timer{
+        id:_timer
         running: true
         repeat: true
         interval: 50
@@ -58,8 +59,7 @@ EntityBase {
                 player.gameSprite.running = false
                 player.collider.bodyType = Body.Static
             }
-            if(hp !== 100)
-                console.log(hp)
+
         }
     }
     Image{
