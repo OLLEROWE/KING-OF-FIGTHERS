@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import "../common"
 
 Rectangle {
+
     signal startBattle
     width: parent.width
     height: parent.height
@@ -24,6 +25,11 @@ Rectangle {
         } else {
             countdownTimer.stop()
         }
+    }
+    function a(){
+
+        console.log(player1SelectionName)
+
     }
     Timer {
         id: countdownTimer
@@ -66,9 +72,114 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
             anchors.horizontalCenter: parent.horizontalCenter
         }
+        RowLayout {
+             anchors.horizontalCenter: parent.horizontalCenter
+            width: parent.width+200
+            height: parent.height - 120  // 剩余的高度用于 GridView
+            Rectangle {
 
+                       width: 100
+                       height: 100
+                       color: "lightgrey"
+                       visible: gridView.currentIndex >= 0  // 只有在有选中项时显示
+                       Image {
+                           id:play1
+                           anchors.fill: parent
+                           source: ""
+                           fillMode: Image.PreserveAspectFit
+                       }
+                   }
+        GridView {
+           // anchors.horizontalCenter: parent.horizontalCenter
+
+            id: gridView
+            width: parent.width-100
+            height: parent.height - 120  // 剩余的高度用于 GridView
+            //anchors.fill: parent
+
+            model: 9 // 九宫格总数
+
+
+            delegate: Rectangle {
+                width: gridView.cellWidth - 10
+                height: gridView.cellHeight - 10
+                color: "lightblue"
+                border.color: "blue"
+                border.width: 2
+                radius: 10
+
+
+                property int index: index
+                property string imageName: {
+                    var imagePath = "../../assets/img/selection/" + (model.index + 1) + ".jpg";
+                    console.log("Index:", model.index, "ImagePath:", imagePath);
+                    return imagePath;
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        console.log("Single click: ", imageName)
+                        gridView.previewImage(imageName)
+                    }
+                    onDoubleClicked: {
+                        console.log("Double click: ", imageName)
+                        player1SelectionName=characterNames[model.index]
+                        console.log("aaaadadawdaw        "+player1SelectionName)
+                        gridView.selectImage(imageName)
+                    }
+                }
+
+                Image {
+                    anchors.centerIn: parent
+                    source: imageName
+                    width: parent.width * 0.8
+                    height: parent.height * 0.8
+                    fillMode: Image.PreserveAspectFit
+                }
+            }
+
+            function previewImage(imageName) {
+                play1.source=imageName
+                opacityAnimation.running = false
+                // 处理预览图片逻辑，例如放大显示或者其他操作
+                console.log("Preview image: ", imageName)
+            }
+
+            function selectImage(imageName) {
+                play1.source=imageName
+                opacityAnimation.running =true
+
+                // 处理选择图片逻辑，例如确定选择并获取名称
+                console.log("Selected image name: ", imageName)
+                // 在这里你可以进行其他操作，例如保存选择的图片等
+            }
+        }
+        PropertyAnimation {
+                   id: opacityAnimation
+                   target:play1
+                   property: "opacity"
+                   to: 0.5  // 动画目标透明度
+                   duration: 800  // 动画持续时间，单位毫秒（0.3 秒）
+                   loops: Animation.Infinite  // 无限循环动画
+                   running: false  // 开始动画
+
+               }
+        // 右侧放大版图片
+              Rectangle {
+                  width: 100
+                  height: 100
+                  color: "lightgrey"
+                  visible: gridView.currentIndex >= 0  // 只有在有选中项时显示
+                  Image {
+                      anchors.fill: parent
+                      source: gridView.currentIndex >= 0 ? "../../assets/img/selection/" + (gridView.currentIndex + 1) + ".jpg" : ""
+                      fillMode: Image.PreserveAspectFit
+                  }
+              }
+
+        }
         // 角色选择控件 - 九宫格布局
-        GridLayout {
+        /*GridLayout {
             id: grid
             columns: 3
             rowSpacing: 10
@@ -95,7 +206,7 @@ Rectangle {
                             text:modelData
                             font.bold: true
                             width: parent.width / 4.5
-                            height: parent.helght
+                            height: parent.height
                             color: "black"
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
@@ -118,7 +229,7 @@ Rectangle {
                     }
                 }
 
-            }
+            }*/
 
 
 
@@ -128,13 +239,15 @@ Rectangle {
                 width: parent.width / 3
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
+
                     countdownTimer.stop() // 停止计时器
+
                     startBattle()
                 }
             }
 
         }
-    }
+
 
     // 左上角 "MEMBER SELECT"
     Text {
@@ -148,6 +261,7 @@ Rectangle {
     }
 
     // 左右两边的 "PLAYER1, PLAYER2"
+
     Column {
         anchors.verticalCenter: grid.verticalCenter // 与九宫格垂直对齐
         anchors.left: parent.left
@@ -167,20 +281,9 @@ Rectangle {
             font.pixelSize: 20
             font.bold: true
         }
-        ComboBox {
-            model: characterNames
-            width: parent.width
-            currentIndex: player1Selection // 绑定当前选择的角色索引
-            onCurrentIndexChanged: {
-                if (currentIndex >= 0 && currentIndex < characterNames.length) {
-                    player1Selection = currentIndex
-                    console.log("Player 1 selection updated to:", player1Selection)
-                } else {
-                    console.warn("Invalid index for Player 1 selection:", currentIndex)
-                }
-            }
         }
-    }
+
+
 
 
     Column {
@@ -203,20 +306,8 @@ Rectangle {
             font.pixelSize: 20
             font.bold: true
         }
-        ComboBox {
-            model: characterNames
-            width: parent.width
-            currentIndex: player2Selection // 绑定当前选择的角色索引
-            onCurrentIndexChanged: {
-                if (currentIndex >= 0 && currentIndex < characterNames.length) {
-                    player2Selection = currentIndex
-                    console.log("Player 2 selection updated to:", player1Selection)
-                } else {
-                    console.warn("Invalid index for Player 2 selection:", currentIndex)
-                }
-            }
         }
 
-    }
+
 
 }
