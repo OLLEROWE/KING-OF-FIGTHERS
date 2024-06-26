@@ -6,15 +6,12 @@ import "../common"
 import "../entities/controller.js" as Controller
 Scene {
     property alias scene: scene
+    //property alias mplayer1: player1
+    //property alias mplayer2: player2
     id: scene
     anchors.fill: parent
 
-    Component.onCompleted:{
-        Controller.players[0] = player1
-        Controller.players[1] = player2
 
-    }
-    Component.onDestruction:Controller.players.length = 0
     JoystickControllerHUD{
         id:joystickController
         x:100
@@ -47,7 +44,7 @@ Scene {
 //         this displays all bodies, joints and forces which is great for debugging
         debugDrawVisible: false
     }
-    BackGround{
+    GameMap{
 
     }
 
@@ -55,19 +52,36 @@ Scene {
         id:land
         anchors.bottom: parent.bottom
     }
-    property string player1SelectionName: "Kyo.qml"
-    property string player2SelectionName: "Kyo.qml"
+    Rectangle{
+        width: 100
+        height: 100
+        Button{
+            anchors.fill: parent
+           onClicked: {
+               selectscene.a()
+           }
+        }
+    }
 
-    function createCharacters() {
+    //Component.onCompleted:createCharacters(scene)
+
+
+    function createCharacters(parentItem) {
         // 创建角色1
-        var player1Character = createCharacter(player1SelectionName, scene.width / 4, true)
 
-        // 创建角色2
-        var player2Character = createCharacter(player2SelectionName, 3 * scene.width / 4 - player2Character.width, false)
 
-        // 添加到场景中
-        scene.addItem(player1Character)
-        scene.addItem(player2Character)
+        var componenta = Qt.createComponent("../entities/" +"Joe" +".qml");
+               if (componenta.status === Component.Ready) {
+
+                   var secondaryModule = componenta.createObject(parentItem);
+
+                    //console.log("Trying to load QML file:", "../entities/" + str + ".qml")
+                   if (secondaryModule === null) {
+                       console.error("Error creating secondary module");
+                   }
+               } else {
+                   console.error("Error loading component:", componenta.errorString());
+               }
     }
     function createCharacter(characterName, xPosition, isPlayer1) {
         var component = Qt.createComponent(characterName)
@@ -88,8 +102,17 @@ Scene {
     }
 
 
+    /*Player{
+        id:player1
+        x:scene.width/4
+        anchors.bottom: land.top
+        // whenever the thumb position changes, update the twoAxisController
+        twoAxisController.xAxis: joystickController.controllerXPosition
+        twoAxisController.yAxis: joystickController.controllerYPosition
 
-    Kyo{
+    }
+
+  /*  Kyo{
         id:player1
         x:scene.width/4
         anchors.bottom: land.top
@@ -129,7 +152,13 @@ Scene {
         height: 20
     }
 
+*/
+    function b(){
+        console.log("my ")
+    }
 
+
+    Component.onDestruction:Controller.players.length = 0
 
     property var keys: new Set
     property string sent_keys: ""
