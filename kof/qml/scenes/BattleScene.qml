@@ -26,28 +26,31 @@ Scene {
         opacity: 0.5
         source: "../../assets/img/joystick_background.png"
 
-        property variant playerTwoAxisController: null // 初始化为null，稍后在创建玩家后赋值
+        property var playerTwoxisController   // 初始化为null，稍后在创建玩家后赋值
 
         thumbSource: "../../assets/img/joystick_thumb.png"
 
         // 当控制器X位置改变时，更新玩家对象的X轴
         onControllerXPositionChanged: {
-            if (playerTwoAxisController) {
-                playerTwoAxisController.xAxis = controllerXPosition;
-            }
-        }
 
-        // 当控制器Y位置改变时，更新玩家对象的Y轴
-        onControllerYPositionChanged: {
-            if (playerTwoAxisController) {
-                playerTwoAxisController.yAxis = controllerYPosition;
-            }
-        }
-        function initializeController(playerObject) {
+             if (playerTwoxisController) {
 
-               playerTwoAxisController = playerObject.getComponent("TwoAxisController");
+                 playerTwoxisController.xAxis = controllerXPosition;
 
-           }
+             }
+
+         }
+
+         onControllerYPositionChanged: {
+
+             if (playerTwoxisController) {
+
+                 playerTwoxisController.yAxis = controllerYPosition;
+
+             }
+
+         }
+
     }
    /* BackgroundMusic {
         id: backgroundMusic
@@ -97,10 +100,19 @@ Scene {
             var component = Qt.createComponent("../entities/" + selectscene.player1SelectionName + ".qml");
 
             if (component.status === Component.Ready) {
+
                 var playerObject = component.createObject(parent, {x: scene.width / 2, bottom: land.top});
+                if(playerObject){
+                    var twoAxisController = playerObject.getComponent("TwoAxisController");
+                       if (twoAxisController) {
+                           joystickController.playerTwoxisController = twoAxisController;
+                       }
+                }
+
                 Globals.player1 = playerObject; // 存储全局引用
-                initializeController(playerObject)
+                //initializeController(playerObject)
                 return playerObject; // 返回创建的玩家对象
+
             } else {
                 console.error("Failed to create player character:", component.errorString());
                 return null;
