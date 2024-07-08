@@ -104,6 +104,19 @@ void Conn::setTargetRoleName(const QString &newTargetRoleName)
     emit targetRoleNameChanged();
 }
 
+bool Conn::isTargetSelectRole() const
+{
+    return m_isTargetSelectRole;
+}
+
+void Conn::setIsTargetSelectRole(bool newIsTargetSelectRole)
+{
+    if (m_isTargetSelectRole == newIsTargetSelectRole)
+        return;
+    m_isTargetSelectRole = newIsTargetSelectRole;
+    emit isTargetSelectRoleChanged();
+}
+
 
 
 void Conn::onSocketReadyRead()
@@ -122,13 +135,16 @@ void Conn::onSocketReadyRead()
         setTargetName(userName);
         qDebug() << "ass" << message << userName;
         switch (messageType) {
-        case 0:
-            setTargetRoleName(message);
-            qDebug() << m_targetName << m_targetRoleName;
+        case 0:{
+            if(!m_isTargetSelectRole)
+                setTargetRoleName(message);
+            }
             break;
         case 1:
             setTargetMessage(message);
             break;
+        case 2:
+            setIsTargetSelectRole(true);
         default:
             break;
         }
