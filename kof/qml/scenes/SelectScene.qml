@@ -11,14 +11,15 @@ Rectangle {
     color: "#000000" // 拳皇97风格的背景色
 
     property int countdown: 600 // 倒计时的初始值
-    property var characterNames: ["Andy", "Chizuru", "Goro", "Joe", "Kula", "Kyo", "Iori", "Ryuji", "Mai"]  //角色名称数组
+    property var characterNames: ["Andy", "Chizuru", "Goro", "Joe", "Kula", "Kyo", "Lori", "Ryuji", "Mai"]  //角色名称数组
     property int currentPlayer: 1
     property int currentSelection: -1 // 当前选择的角色 (0-8 对应九宫格的索引)
     property int player1Selection: -1 // Player1 选择的角色 (-1 表示未选择)
-    property int player2Selection: 0 // Player2 选择的角色 (-1 表示未选择)
-    property string player1SelectionName: "Kyo.qml" // 初始化为 Kyo.qml
-    property string player2SelectionName: "Kyo.qml" // 初始化为 Kyo.qml
+    property int player2Selection
+    property string player1SelectionName: "Kyo"
+    property string player2SelectionName: "Kyo"
     property bool gridViewEnabled: true
+    property int index: characterNames.findIndex(name => name === conn.targetRoleName);
 
     onVisibleChanged: {
         if (visible) {
@@ -147,7 +148,7 @@ Rectangle {
 
                     property int index: index
                     property string imageName: {
-                        var imagePath = "../../assets/img/selection/" + (model.index + 1) + ".jpg";
+                        var imagePath = "../../assets/img/selection/" + (model.index) + ".jpg";
                         console.log("Index:", model.index, "ImagePath:", imagePath);
                         return imagePath;
                     }
@@ -156,22 +157,22 @@ Rectangle {
                         enabled: true
                         onTapped: {
                             if (gridViewEnabled){
-                                console.log("Single click: ", imageName)
+                                console.log("Single click:------- ", imageName)
                                 gridView.previewImage(imageName)
                             }
-                            conn.sendMessage(0,model.index + 1)
+                            conn.sendMessage(0,characterNames[model.index ])
                         }
                         onDoubleTapped: {
                             if (gridViewEnabled){
-                                conn.sendMessage(0,model.index + 1)
                                 console.log("Double click: ", imageName)
-                                player1SelectionName = characterNames[conn.targetRoleName]
+                                player1SelectionName = characterNames[model.index ]
                                 console.log("aaaadadawdaw " + player1SelectionName)
                                 gridView.selectImage(imageName)
                                 player1text.text = player1SelectionName
                                 player1Selection = 0
                                 gridViewEnabled = false
-
+                                conn.sendMessage(0,characterNames[model.index ])
+                                conn.sendMessage(2,true)
                             }
                         }
                     }
@@ -241,7 +242,7 @@ Rectangle {
 
                     Text {
                         id:player2text
-                        text:  "未选择"
+                        text:"未选择"
                         color: "#ffffff"
                         font.pixelSize: 20
                         font.bold: true
@@ -261,7 +262,7 @@ Rectangle {
                 Image {
                     id:play2
                     anchors.fill: parent
-                    source: gridView.currentIndex >= 0 ? "../../assets/img/selection/" + conn.targetRoleName + ".jpg": ""
+                    source: gridView.currentIndex >= 0 ? "../../assets/img/selection/" + index + ".jpg": ""
                     fillMode: Image.PreserveAspectFit
                 }
             }
@@ -299,8 +300,10 @@ Rectangle {
     Connections{
         target: conn
         function onTargetRoleNameChanged(){
-            console.log(conn.targetRoleName)
-            player2SelectionName = characterNames[conn.targetRoleName]
+            player2SelectionName = conn.targetRoleName
+            player2text.text = conn.targetRoleName
+            console.log(characterNames[model.index ]+ "---" + player2text.text + "------------------")
+
         }
     }
 
