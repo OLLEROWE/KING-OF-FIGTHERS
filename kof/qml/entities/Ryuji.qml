@@ -10,7 +10,6 @@ EntityBase {
     width: gameSprite.width * scale
     height: gameSprite.height * scale
     property alias collider: _collider
-    property var pressed_keys: new Set
     property int speedx: 400
     property int speedy: 400
     property alias twoAxisController : _twoAxisController
@@ -43,9 +42,9 @@ EntityBase {
 
     focus:true
     Keys.onPressed:
-        (e)=>{pressed_keys.add(e.key);keysChanged();}
+        (e)=>{Controller.pressed_keys.add(e.key);keysChanged();}
     Keys.onReleased:
-        (e)=>{pressed_keys.delete(e.key);keysChanged()}
+        (e)=>{Controller.pressed_keys.delete(e.key);keysChanged()}
     Timer{
         id:_timer
         running: true

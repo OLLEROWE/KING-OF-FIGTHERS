@@ -1,5 +1,5 @@
 .pragma library
-
+let pressed_keys = new Set
 let players = []
 let toFirst = [4,6,7,8,9,10,11,12,13,18,21,22,23,24,25,26,27,28,29,30,31,32,33]
 let toFive = [14,15,16,17,19]
@@ -14,14 +14,14 @@ function update_move(player){
 }
 function update_control(player){
     let up, left, right, down, A, B, C, D;
-    up = player.pressed_keys.has(Qt.Key_Up) || player.twoAxisController.yAxis > 0.6;
-    left = player.pressed_keys.has(Qt.Key_Left) || player.twoAxisController.xAxis < -0.6;
-    right = player.pressed_keys.has(Qt.Key_Right) || player.twoAxisController.xAxis > 0.6;
-    down = player.pressed_keys.has(Qt.Key_Down) || player.twoAxisController.yAxis < -0.6;
-    A = player.pressed_keys.has(Qt.Key_A)
-    B = player.pressed_keys.has(Qt.Key_S)
-    C = player.pressed_keys.has(Qt.Key_D)
-    D = player.pressed_keys.has(Qt.Key_F)
+    up = pressed_keys.has(Qt.Key_Up) || player.twoAxisController.yAxis > 0.6;
+    left = pressed_keys.has(Qt.Key_Left) || player.twoAxisController.xAxis < -0.6;
+    right = pressed_keys.has(Qt.Key_Right) || player.twoAxisController.xAxis > 0.6;
+    down = pressed_keys.has(Qt.Key_Down) || player.twoAxisController.yAxis < -0.6;
+    A = pressed_keys.has(Qt.Key_A)
+    B = pressed_keys.has(Qt.Key_S)
+    C = pressed_keys.has(Qt.Key_D)
+    D = pressed_keys.has(Qt.Key_F)
 
     if(player.status === 1){
         if(A || B || C || D){
