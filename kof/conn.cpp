@@ -4,6 +4,8 @@
 #include <QByteArray>
 #include <QDataStream>
 #include <QHostInfo>
+#include <QProcess>
+#include <QRegularExpression>
 Conn::Conn(QObject *parent)
     : QObject{parent}
 {
@@ -13,13 +15,14 @@ Conn::Conn(QObject *parent)
     connect(m_udpSocket,&QUdpSocket::readyRead,this,&Conn::onSocketReadyRead);
 }
 
-void Conn::sendMessage(QString msg)
+void Conn::sendMessage(int type, QString msg)
 {
-    QByteArray data = msg.toUtf8();
-    if(!m_targetIp.isEmpty()){
-        QHostAddress targetAddr(m_targetIp);
-        m_udpSocket->writeDatagram(data, targetAddr, m_targetPort); //发出数据报
-    }
+    QByteArray data;
+    QDataStream out(&data, QIODevice::WriteOnly);
+    out << type << getUserName() << msg;
+    QHostAddress targetAddr(m_targetIp);
+    m_udpSocket->writeDatagram(data, targetAddr, m_targetPort); //发出数据报
+
 }
 
 QString Conn::getIp()
@@ -37,7 +40,21 @@ QString Conn::getIp()
 
 QString Conn::getUserName()
 {
-    return QHostInfo::localHostName();
+    QStringList envVariables;
+    envVariables << "USERNAME.*" << "USER.*" << "USERDOMAIN.*"
+                 << "HOSTNAME.*" << "DOMAINNAME.*";
+    QStringList environment = QProcess::systemEnvironment();
+    foreach (QString string, envVariables) {
+        int index = environment.indexOf(QRegularExpression(string));
+        if (index != -1) {
+            QStringList stringList = environment.at(index).split('=');
+            if (stringList.size() == 2) {
+                return stringList.at(1);
+                break;
+            }
+        }
+    }
+    return "unknown";
 }
 
 
@@ -61,21 +78,60 @@ void Conn::setTargetMessage(const QString &newTargetMessage)
     emit targetMessageChanged();
 }
 
+QString Conn::targetName() const
+{
+    return m_targetName;
+}
+
+void Conn::setTargetName(const QString &newTargetName)
+{
+    if (m_targetName == newTargetName)
+        return;
+    m_targetName = newTargetName;
+    emit targetNameChanged();
+}
+
+QString Conn::targetRoleName() const
+{
+    return m_targetRoleName;
+}
+
+void Conn::setTargetRoleName(const QString &newTargetRoleName)
+{
+    if (m_targetRoleName == newTargetRoleName)
+        return;
+    m_targetRoleName = newTargetRoleName;
+    emit targetRoleNameChanged();
+}
+
+
+
 void Conn::onSocketReadyRead()
 {
     //读取收到的数据报
     //hasPendingDatagrams()表示是否有待读取的传入数据报
     while(m_udpSocket->hasPendingDatagrams())
     {
-        QByteArray datagram; //数据报是QByteArray类型的字节数组
+        QByteArray datagram;
         datagram.resize(m_udpSocket->pendingDatagramSize());
-
-        QHostAddress peerAddr;
-        quint16 peerPort;
-        m_udpSocket->readDatagram(datagram.data(),datagram.size(),&peerAddr,&peerPort);
-        QString str=datagram.data();
-        setTargetMessage(str);
-        /*"[From ---" + peerAddr.toString() + "---:" + QString::number(peerPort) + "] ";*/
+        m_udpSocket->readDatagram(datagram.data(), datagram.size());
+        QDataStream in(&datagram, QIODevice::ReadOnly);
+        int messageType;
+        QString userName, message;
+        in >> messageType >> userName >> message;
+        setTargetName(userName);
+        qDebug() << "ass" << message << userName;
+        switch (messageType) {
+        case 0:
+            setTargetRoleName(message);
+            qDebug() << m_targetName << m_targetRoleName;
+            break;
+        case 1:
+            setTargetMessage(message);
+            break;
+        default:
+            break;
+        }
     }
 }
 
