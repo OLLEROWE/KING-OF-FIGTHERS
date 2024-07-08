@@ -38,11 +38,7 @@ EntityBase {
         id: _twoAxisController
     }
 
-    focus:true
-    Keys.onPressed:
-        (e)=>{Controller.pressed_keys.add(e.key);keysChanged();}
-    Keys.onReleased:
-        (e)=>{Controller.pressed_keys.delete(e.key);keysChanged()}
+
     Timer{
         running: true
         repeat: true

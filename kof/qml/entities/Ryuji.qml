@@ -40,11 +40,6 @@ EntityBase {
         onYAxisChanged: positionChanged()
     }
 
-    focus:true
-    Keys.onPressed:
-        (e)=>{Controller.pressed_keys.add(e.key);keysChanged();}
-    Keys.onReleased:
-        (e)=>{Controller.pressed_keys.delete(e.key);keysChanged()}
     Timer{
         id:_timer
         running: true
