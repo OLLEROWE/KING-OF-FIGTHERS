@@ -9,7 +9,6 @@ import "../entities/controller.js" as Controller
 import "globals.js" as Globals
 Scene {
     property alias scene: scene
-
     property var player1
     property var conn
     id: scene
@@ -226,6 +225,10 @@ Scene {
 
 
 
+    Keys.onPressed:
+        (e)=>{Controller.pressed_keys.add(e.key);keysChanged();}
+    Keys.onReleased:
+        (e)=>{Controller.pressed_keys.delete(e.key);keysChanged()}
 
 
     Component.onDestruction:Controller.players.length = 0
