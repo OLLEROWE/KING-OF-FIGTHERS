@@ -14,14 +14,15 @@ EntityBase {
     property alias twoAxisController : _twoAxisController
     property alias gameSprite: gameSprite
     property bool isLeftPlayer: true
+    property alias timer: _timer
     property int direction: 1
     property int status: 1
     property int timedelta: 10
     property int hp: 100
-    property var count : [0, 9, 10, 9, 13, 6, 6, 7, 10, 11, 14, 13, 16, 16, 7, 10, 12, 12]
 
-
+    property var count : [0, 9, 10, 9, 13, 6, 6, 7, 10, 11, 14, 13, 16, 16, 7, 10, 12, 12,12,12,30,17,23,16,29,12,27,27,60,11,9,14]
     signal keysChanged()
+    signal positionChanged()
     GameAnimatedSprite{
         id:gameSprite
         mirrorX: direction === -1 ? true : false
@@ -35,14 +36,17 @@ EntityBase {
     }
     TwoAxisController {
         id: _twoAxisController
+        onXAxisChanged:positionChanged()
+        onYAxisChanged: positionChanged()
     }
 
     focus:true
     Keys.onPressed:
-        (e)=>{pressed_keys.add(e.key);keysChanged()}
+        (e)=>{pressed_keys.add(e.key);keysChanged();}
     Keys.onReleased:
         (e)=>{pressed_keys.delete(e.key);keysChanged()}
     Timer{
+        id:_timer
         running: true
         repeat: true
         interval: 50
@@ -51,11 +55,12 @@ EntityBase {
             Controller.update_control(player)
             Controller.update_attack(player)
             Controller.update_direction(player)
-            Controller.render(player,image,count)
+            Controller.render(player,image,count,3)
             if(player.status === 20 && player.gameSprite.currentFrame === player.gameSprite.frameCount - 1){
                 player.gameSprite.running = false
                 player.collider.bodyType = Body.Static
             }
+
         }
     }
     Image{
@@ -66,4 +71,5 @@ EntityBase {
     function update_image(){
         return "../../assets/img/lori/" + status + ".png"
     }
+
 }

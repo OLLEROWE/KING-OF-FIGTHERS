@@ -19,7 +19,7 @@ EntityBase {
     property int status: 1
     property int timedelta: 10
     property int hp: 100
-    property var count : [0, 56, 5, 5, 13, 4, 7, 8, 4, 11, 15, 15, 16, 15, 4, 4, 7, 8, 8, 0, 21, 35,15,15,16,14,24,21,21,24,72,4,4,15]
+    property var count : [0, 56, 5, 5, 13, 4, 7, 8, 4, 11, 15, 15, 16, 15, 4, 4, 7, 8, 8, 8, 21, 35,15,15,16,14,24,21,72,4,4,15]
     signal keysChanged()
     signal positionChanged()
     GameAnimatedSprite{
@@ -41,7 +41,7 @@ EntityBase {
 
     focus:true
     Keys.onPressed:
-        (e)=>{pressed_keys.add(e.key);keysChanged();console.log(e.key)}
+        (e)=>{pressed_keys.add(e.key);keysChanged();}
     Keys.onReleased:
         (e)=>{pressed_keys.delete(e.key);keysChanged()}
     Timer{

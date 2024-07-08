@@ -1,6 +1,10 @@
 .pragma library
 
 let players = []
+let toFirst = [4,6,7,8,9,10,11,12,13,18,21,22,23,24,25,26,27,28,29,30,31,32,33]
+let toFive = [14,15,16,17,19]
+let jumps = [4,10,11,12,13]
+let attacks = [6,7,8,9,10,11,12,13,14,15,16,17,21,22,23,24,25,26,27,28,29,30]
 function update_move(player){
     if (player.x < 0)
         player.x = 0;
@@ -9,23 +13,23 @@ function update_move(player){
     }
 }
 function update_control(player){
-    let up, left, right, down, Lp, Hp, Ll, Hl;
-    up = player.pressed_keys.has(Qt.Key_W) || player.twoAxisController.yAxis > 0.6;
-    left = player.pressed_keys.has(Qt.Key_A) || player.twoAxisController.xAxis < -0.6;
-    right = player.pressed_keys.has(Qt.Key_D) || player.twoAxisController.xAxis > 0.6;
-    down = player.pressed_keys.has(Qt.Key_S) || player.twoAxisController.yAxis < -0.6;
-    Lp = player.pressed_keys.has(Qt.Key_U)
-    Hp = player.pressed_keys.has(Qt.Key_I)
-    Ll = player.pressed_keys.has(Qt.Key_J)
-    Hl = player.pressed_keys.has(Qt.Key_K)
+    let up, left, right, down, A, B, C, D;
+    up = player.pressed_keys.has(Qt.Key_Up) || player.twoAxisController.yAxis > 0.6;
+    left = player.pressed_keys.has(Qt.Key_Left) || player.twoAxisController.xAxis < -0.6;
+    right = player.pressed_keys.has(Qt.Key_Right) || player.twoAxisController.xAxis > 0.6;
+    down = player.pressed_keys.has(Qt.Key_Down) || player.twoAxisController.yAxis < -0.6;
+    A = player.pressed_keys.has(Qt.Key_A)
+    B = player.pressed_keys.has(Qt.Key_S)
+    C = player.pressed_keys.has(Qt.Key_D)
+    D = player.pressed_keys.has(Qt.Key_F)
 
-    if(player.status === 1 || player.status === 2 || player.status === 3){
-        if(Lp || Hp || Ll || Hl){
-            if(Lp)
+    if(player.status === 1){
+        if(A || B || C || D){
+            if(A)
                 player.status = 6;
-            else if(Hp)
+            else if(B)
                 player.status = 7;
-            else if(Ll)
+            else if(C)
                 player.status = 8;
             else
                 player.status = 9;
@@ -54,26 +58,65 @@ function update_control(player){
             player.collider.linearVelocity.x = 0
             player.status = 1;
         }
-    }else if(player.status === 4){
-        if(Lp || Hp || Ll || Hl){
-            if(Lp)
+    }else if(player.status === 3){
+        if(A){
+            player.status = 24;
+            player.collider.linearVelocity.x = 0
+        }else if(B){
+            player.status = 23;
+            player.collider.linearVelocity.x = 0
+        }else if(C){
+            player.status = 21;
+            player.collider.linearVelocity.x = 0
+        }else if(D){
+            player.status = 22;
+            player.collider.linearVelocity.x = 0
+        }else if(up){
+            player.status = 5;
+        }else if(!left && !right){
+            player.status = 1;
+        }
+
+    }else if(player.status === 2){
+        if(A){
+            player.status = 25;
+            player.collider.linearVelocity.x = 0
+        }else if(B){
+            player.status = 26;
+            player.collider.linearVelocity.x = 0
+        }else if(C){
+            player.status = 27;
+            player.collider.linearVelocity.x = 0
+        }else if(D){
+            player.status = 30;
+            player.collider.linearVelocity.x = 0
+        }else if(up){
+            player.status = 5;
+        }else if(!left && !right){
+            player.status = 1;
+        }
+    }
+    else if(player.status === 4){
+        if(A || B || C || D){
+            if(A)
                 player.status = 10;
-            else if(Hp){
+            else if(B){
                 player.status = 11;
             }
-            else if(Ll)
+            else if(C)
                 player.status = 12;
             else
                 player.status = 13
+
         }
     }else if(player.status === 5){
-        if(Lp || Hp || Ll || Hl){
-            if(Lp)
+        if(A || B || C || D){
+            if(A)
                 player.status = 14;
-            else if(Hp){
+            else if(B){
                 player.status = 15;
             }
-            else if(Ll)
+            else if(C)
                 player.status = 16;
             else
                 player.status = 17
@@ -88,11 +131,9 @@ function update_control(player){
 
 }
 
-function render(player,image,count){
+function render(player,image,count,point){
 
-    var toFirst = [4,6,7,8,9,10,11,12,13,18]
-    var toFive = [14,15,16,17,19]
-    var jumps = [4,10,11,12,13]
+
     player.gameSprite.source = Qt.resolvedUrl(image.source)
     player.gameSprite.frameCount = count[player.status]
     player.gameSprite.frameWidth = image.width / player.gameSprite.frameCount
@@ -104,10 +145,12 @@ function render(player,image,count){
         player.gameSprite.frameDuration = player.timedelta * 7
 
     if(toFirst.includes(player.status) && player.gameSprite.currentFrame === player.gameSprite.frameCount - 1){
+//        if(player.status === 23 || player.status === 25 || player.status === 26 || player.status === 25 || player.status === 27 || player.status === 30)  player.x += player.gameSprite.width
+//        else if(player.status === 24 ) player.x += player.gameSprite.width / 2
         player.status = 1
     }
     if(player.status === 5 && player.gameSprite.currentFrame === player.gameSprite.frameCount - 2){
-        player.gameSprite.currentFrame = player.gameSprite.frameCount - 2
+        player.gameSprite.currentFrame = player.gameSprite.frameCount - point
         player.gameSprite.running = false
     }
     if(toFive.includes(player.status) && player.gameSprite.currentFrame === player.gameSprite.frameCount - 1){
@@ -139,8 +182,19 @@ function is_collision(r1, r2) {
 }
 function is_attack(other) {
     if (other.status === 20) return;
-    other.status = 18;
-    other.hp = Math.max(other.hp-20,0)
+    if(other.status === 3){
+        other.hp = Math.max(other.hp-5,0)
+        other.status = 31
+    }else if(jumps.includes(other.status)){
+        other.hp = Math.max(other.hp-5,0)
+        other.status = 33
+    }else if(toFive.includes(other.status) || other.status === 5){
+        other.hp = Math.max(other.hp-5,0)
+        other.status = 32
+    }else{
+        other.hp = Math.max(other.hp-20,0)
+        other.status = 18;
+    }
     if (other.hp <= 0) {
         other.status = 20;
     }
@@ -148,7 +202,7 @@ function is_attack(other) {
 function update_attack(player) {
     if(players.length !== 2)
         return;
-    if ((player.status === 6) && (player.gameSprite.currentFrame === player.gameSprite.frameCount-4)) {
+    if ((attacks.includes(player.status)) && (player.gameSprite.currentFrame === player.gameSprite.frameCount-1)) {
         let id = player.isLeftPlayer? 0 : 1
         let me = players[id], you = players[1 - id];
         let r1;

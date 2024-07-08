@@ -14,13 +14,14 @@ EntityBase {
     property alias twoAxisController : _twoAxisController
     property alias gameSprite: gameSprite
     property bool isLeftPlayer: true
+    property alias timer: _timer
     property int direction: 1
     property int status: 1
     property int timedelta: 10
     property int hp: 100
-    property var count : [0, 31, 8, 7, 15, 8, 8, 6, 14, 15, 17, 18, 17, 17, 7, 6, 12, 11]
-
+    property var count : [0, 31, 8, 7, 15, 8, 8, 14, 6, 15, 17, 18, 17, 17, 7, 6, 12, 11, 24, 24, 24, 13, 14,14,24,24,16,16,73,9,10,10]
     signal keysChanged()
+    signal positionChanged()
     GameAnimatedSprite{
         id:gameSprite
         mirrorX: direction === -1 ? true : false
@@ -34,14 +35,17 @@ EntityBase {
     }
     TwoAxisController {
         id: _twoAxisController
+        onXAxisChanged:positionChanged()
+        onYAxisChanged: positionChanged()
     }
 
     focus:true
     Keys.onPressed:
-        (e)=>{pressed_keys.add(e.key);keysChanged()}
+        (e)=>{pressed_keys.add(e.key);keysChanged();}
     Keys.onReleased:
         (e)=>{pressed_keys.delete(e.key);keysChanged()}
     Timer{
+        id:_timer
         running: true
         repeat: true
         interval: 50
@@ -50,11 +54,12 @@ EntityBase {
             Controller.update_control(player)
             Controller.update_attack(player)
             Controller.update_direction(player)
-            Controller.render(player,image,count)
+            Controller.render(player,image,count,5)
             if(player.status === 20 && player.gameSprite.currentFrame === player.gameSprite.frameCount - 1){
                 player.gameSprite.running = false
                 player.collider.bodyType = Body.Static
             }
+
         }
     }
     Image{
@@ -65,4 +70,5 @@ EntityBase {
     function update_image(){
         return "../../assets/img/chizuru/" + status + ".png"
     }
+
 }

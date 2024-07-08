@@ -50,7 +50,7 @@ EntityBase {
             Controller.update_control(player)
             Controller.update_attack(player)
             Controller.update_direction(player)
-            Controller.render(player,image,count)
+            Controller.render(player,image,count,2)
             if(player.status === 20 && player.gameSprite.currentFrame === player.gameSprite.frameCount - 1){
                 player.gameSprite.running = false
                 player.collider.bodyType = Body.Static
