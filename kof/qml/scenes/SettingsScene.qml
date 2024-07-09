@@ -27,16 +27,17 @@ Rectangle {
     }
 
     Column {
-        width: parent.width * 0.6
+        width: parent.width * 0.3
         spacing: 20
         anchors.centerIn: parent
 
         Text {
             text: "游戏设置"
             font.family: "ARCADECLASSIC" // 使用自定义字体
-            font.pixelSize: 40
+            font.pixelSize: 50
             color: "white"
             anchors.horizontalCenter: parent.horizontalCenter
+             anchors.topMargin : parent.height*0.3
         }
 
         // 各种设置控件
@@ -48,7 +49,6 @@ Rectangle {
                           spacing: 10
                           Text {
                               text: "音量"
-
                               font.family: kofFont.name
                               font.pixelSize: 20
                               color: "white"
@@ -61,6 +61,7 @@ Rectangle {
                               from: 0
                               to: 100
                               value: 50
+                              onValueChanged: audioController.setVolume(value)
                               background: Rectangle {
                                   implicitWidth: volumeSlider.width
                                   implicitHeight: volumeSlider.height
@@ -102,9 +103,9 @@ Rectangle {
             height: 40
             anchors.horizontalCenter: parent.horizontalCenter
             background: Rectangle {
-                color: "#333333"
+                color: "white"
                 radius: 5
-                border.color: "white"
+                border.color: "black"
                 border.width: 2
             }
             onClicked: goStartScene()
