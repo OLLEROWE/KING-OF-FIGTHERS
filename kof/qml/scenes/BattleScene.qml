@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Dialogs
 import Felgo
 import "../entities"
 import "../common"
@@ -14,7 +15,8 @@ Scene {
     id: scene
     anchors.fill: parent
 
-
+    signal goSelect
+    signal goStart
     JoystickControllerHUD {
         id: joystickController
         x: 100
@@ -52,6 +54,18 @@ Scene {
         }
 
     }
+
+    MessageDialog {
+        id:gameOverText
+        informativeText: "Do you want to keep playing?"
+        buttons: MessageDialog.Ok | MessageDialog.Cancel
+        onAccepted:{
+            goSelect();
+        }
+        onRejected: {
+            goStart()
+        }
+    }
     BackgroundMusic {
         id: backgroundMusic
         source: Qt.resolvedUrl("../../assets/vedio/bgc.mp3")
@@ -75,15 +89,16 @@ Scene {
     GameMap{
 
     }
+    property int hp1: gethp1()
+    property int hp2: gethp2()
+
     RowLayout{
         y:30
         width: parent.width
         spacing: 20
-
-
         HealthBar{
             id:player1HpBar
-            hp:player1.hp
+            hp:hp1
             Layout.fillWidth: true
             onLose: {
                 gameOverText.text = "You Lose!!!"
@@ -97,7 +112,7 @@ Scene {
         }
         HealthBar{
             id:player2HpBar
-            hp:player2.hp
+            hp:hp2
             Layout.fillWidth: true
             onLose: {
                 gameOverText.text = "You Win!!!"
@@ -183,24 +198,49 @@ Scene {
     }
 
 
+    Timer{
+        id:_timer
+        running: true
+        repeat: true
+        interval: 50
+        onTriggered: {
+            hp1 = gethp1()
+            hp2 = gethp2()
+            console.log(Controller.players.length + "--------------")
+            console.log(hp1 + "--------------0")
+            console.log(hp2  + "--------------1")
 
-
+        }
+    }
+    function gethp1(){
+        if(Controller.players.length === 2)
+            return Controller.players[0].hp
+        return 100
+    }
+    function gethp2(){
+        if(Controller.players.length === 2)
+            return Controller.players[1].hp
+        return 100
+    }
     function create1Character() {
         var component = Qt.createComponent("../entities/" + selectscene.player1SelectionName + ".qml");
 
         if (component.status === Component.Ready) {
 
-            var playerObject = component.createObject(parent, {x: scene.width /4});
+            var playerObject = component.createObject(scene, {x: scene.width /4});
             if(playerObject){
                 var twoAxisController = playerObject.getComponent("TwoAxisController");
                 if (twoAxisController) {
                     joystickController.playerTwoxisController = twoAxisController;
                 }
             }
-
+            playerObject.anchors.bottom = land.top
             Globals.player1 = playerObject; // 存储全局引用
             //initializeController(playerObject)
+            Controller.players.push(playerObject)
+            console.log(Controller.players.length + "1--------------")
             return playerObject; // 返回创建的玩家对象
+
 
         } else {
             console.error("Failed to create player character:", component.errorString());
@@ -211,8 +251,13 @@ Scene {
         var create2 = Qt.createComponent( "../entities/"+ selectscene.player1SelectionName+".qml" )
         conn = create2
         if (create2.status === Component.Ready) {
-            create2.createObject(parent, {x:scene.width*3/4,bottom:land.top});
-
+            var playerObject =create2.createObject(scene, {x:scene.width*3/4});
+            playerObject.anchors.bottom = land.top
+            Globals.player2 = playerObject; // 存储全局引用
+            Globals.player2.direction = -1
+            Globals.player2.isLeftPlayer = false
+            Controller.players.push(playerObject)
+            console.log(Controller.players.length + "2--------------")
         } else {
             console.error("Failed to create"+":", create2.errorString())
             return null

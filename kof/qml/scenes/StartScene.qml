@@ -50,9 +50,10 @@ Scene {
         id: menuColumn
         spacing: 20
         width: parent.width * 0.3
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: logoImage.bottom
-        anchors.topMargin: 2
+        anchors.centerIn: parent
+//        anchors.horizontalCenter: parent.horizontalCenter
+//        anchors.top: logoImage.bottom
+//        anchors.topMargin: 2
 
         // "开始游戏"
         Button {

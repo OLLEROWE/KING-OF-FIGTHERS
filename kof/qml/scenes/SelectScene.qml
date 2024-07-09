@@ -148,7 +148,7 @@ Rectangle {
 
                     property int index: index
                     property string imageName: {
-                        var imagePath = "../../assets/img/selection/" + (model.index) + ".jpg";
+                        var imagePath = "../../assets/img/selection/" + (model.index + 1) + ".jpg";
                         console.log("Index:", model.index, "ImagePath:", imagePath);
                         return imagePath;
                     }
@@ -262,7 +262,7 @@ Rectangle {
                 Image {
                     id:play2
                     anchors.fill: parent
-                    source: gridView.currentIndex >= 0 ? "../../assets/img/selection/" + index + ".jpg": ""
+                    source: gridView.currentIndex >= 0 ? "../../assets/img/selection/" + (index + 1) + ".jpg": ""
                     fillMode: Image.PreserveAspectFit
                 }
             }
