@@ -1,6 +1,6 @@
 #include <QApplication>
 #include <FelgoApplication>
-
+#include "AudioController.h"
 #include <QQmlApplicationEngine>
 #include <conn.h>
 #include <QQmlContext>
@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
 {
 
     QApplication app(argc, argv);
+
 
     FelgoApplication felgo;
 
@@ -36,6 +37,8 @@ int main(int argc, char *argv[])
     felgo.setContentScaleAndFileSelectors(1);
     Conn conn;
     engine.rootContext()->setContextProperty("conn",&conn);
+    AudioController audioController;
+    engine.rootContext()->setContextProperty("audioController", &audioController);
     engine.load(QUrl(felgo.mainQmlFileName()));
     // to start your project as Live Client, comment (remove) the lines "felgo.setMainQmlFileName ..." & "engine.load ...",
 //    engine.loadFromModule("io.qt.examples.kof", "Main");

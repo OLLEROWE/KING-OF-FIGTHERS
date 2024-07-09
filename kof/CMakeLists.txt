@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Felgo  REQUIRED)
 
+
 # Project identifier and version
 # More information: https://felgo.com/doc/felgo-publishing/#project-configuration
 set(PRODUCT_IDENTIFIER "com.yourcompany.wizardEVAP.Kof")
@@ -37,6 +38,8 @@ qt_add_executable(appkof
     main.cpp
     conn.cpp
     conn.h
+    AudioController.h
+    AudioController.cpp
     ${QmlFiles}
     ${AssetsFiles}
 )
