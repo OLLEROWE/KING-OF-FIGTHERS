@@ -250,6 +250,7 @@ Scene {
     function create2Character() {
         var create2 = Qt.createComponent( "../entities/"+ selectscene.player1SelectionName+".qml" )
         conn = create2
+        clock.isRunning = true
         if (create2.status === Component.Ready) {
             var playerObject =create2.createObject(scene, {x:scene.width*3/4});
             playerObject.anchors.bottom = land.top
