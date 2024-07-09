@@ -8,7 +8,10 @@ Text{
         interval: 1000
         running: isRunning
         repeat: true
-        onTriggered: time-=1
+        onTriggered: {
+            if(time > 0)
+                time-=1
+        }
     }
     color:"orange"
     text:time
