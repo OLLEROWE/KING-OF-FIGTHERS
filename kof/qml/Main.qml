@@ -7,6 +7,7 @@ import "common"
 GameWindow {
     id: gameWindow
     property alias selectscene: selectScene
+      property alias battlescene: battleScene
     // You get free licenseKeys from https://felgo.com/licenseKey
     // With a licenseKey you can:
     //  * Publish your games & apps for the app stores
@@ -24,11 +25,10 @@ GameWindow {
     screenHeight: 640
 
 
-    state: "menu"
     StartScene {
         id: startScene
         visible: true // 初始状态为 "menu" 时可见
-        onStartGame: gameWindow.state = "connection"
+        onStartGame: gameWindow.state = "model"
         onOpenSettings: gameWindow.state = "setting"
         onExit: Qt.quit()
     }
@@ -49,17 +49,44 @@ GameWindow {
 
     }
     BattleScene {
-        id:battleScene;
-        visible: false
-        onGoSelect:gameWindow.state="selection"
-        onGoStart: gameWindow.state="menu"
-    }
+         id:battleScene;
+         visible: false
+         onGoSelect:{
+             gameWindow.state="selection"
+             selectscene.newselect()
+             battlescene.newbattle()
+         }
+         onGoStart: {
+
+             gameWindow.state="menu"
+             selectscene.newselect()
+             battlescene.newbattle()
+         }
+     }
+
 
     SettingsScene{
         id:settingsScene;
         visible: false
         onGoStartScene:gameWindow.state = "menu"
     }
+    ModelScene{
+        id:modelScene
+        visible: false
+        onToBattle: {
+            selectScene.isNetGame = false
+            battleScene.isNetGame = false
+            gameWindow.state = "selection"
+        }
+        onToNet: {
+            selectScene.isNetGame = true
+            battleScene.isNetGame = true
+            gameWindow.state = "connection"
+        }
+
+    }
+    state: "menu"
+
     states: [
         State {
             name: "menu"
@@ -68,6 +95,7 @@ GameWindow {
             PropertyChanges { target: selectScene; visible: false }
             PropertyChanges { target: battleScene; visible: false }
             PropertyChanges { target: settingsScene; visible: false }
+            PropertyChanges { target: modelScene;visible:false}
         },
         State {
             name: "connection"
@@ -76,14 +104,16 @@ GameWindow {
             PropertyChanges { target: selectScene; visible: false }
             PropertyChanges { target: battleScene; visible: false }
             PropertyChanges { target: settingsScene; visible: false }
+            PropertyChanges { target: modelScene;visible:false}
         },
         State {
             name: "selection"
             PropertyChanges { target: startScene; visible: false }
             PropertyChanges { target: connectionScene; visible: false }
-            PropertyChanges { target: selectScene; visible: true }
+            PropertyChanges { target: selectScene; visible: true ;focus:true}
             PropertyChanges { target: battleScene; visible: false }
             PropertyChanges { target: settingsScene; visible: false }
+            PropertyChanges { target: modelScene;visible:false}
         },
         State {
             name: "game"
@@ -92,6 +122,7 @@ GameWindow {
             PropertyChanges { target: selectScene; visible: false }
             PropertyChanges { target: battleScene; visible: true;focus:true }
             PropertyChanges { target: settingsScene; visible: false }
+            PropertyChanges { target: modelScene;visible:false}
         },
         State {
             name: "setting"
@@ -100,6 +131,16 @@ GameWindow {
             PropertyChanges { target: selectScene; visible: false }
             PropertyChanges { target: battleScene; visible: false }
             PropertyChanges { target: settingsScene; visible: true }
+            PropertyChanges { target: modelScene;visible:false}
+        },
+        State {
+            name: "model"
+            PropertyChanges { target: startScene; visible: false }
+            PropertyChanges { target: connectionScene; visible: false }
+            PropertyChanges { target: selectScene; visible: false }
+            PropertyChanges { target: battleScene; visible: false }
+            PropertyChanges { target: settingsScene; visible: false }
+            PropertyChanges { target: modelScene;visible:true}
         }
     ]
 
