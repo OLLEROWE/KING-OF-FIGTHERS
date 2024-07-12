@@ -11,9 +11,11 @@ class Conn : public QObject
     Q_OBJECT
     QML_ELEMENT
 public:
+    Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
     Q_PROPERTY(QString targetMessage READ targetMessage WRITE setTargetMessage NOTIFY targetMessageChanged)
     Q_PROPERTY(QString targetName READ targetName WRITE setTargetName NOTIFY targetNameChanged)
     Q_PROPERTY(QString targetRoleName READ targetRoleName WRITE setTargetRoleName NOTIFY targetRoleNameChanged)
+    Q_PROPERTY(bool isTargetSelectRole READ isTargetSelectRole WRITE setIsTargetSelectRole NOTIFY isTargetSelectRoleChanged)
     explicit Conn(QObject *parent = nullptr);
     void onSocketReadyRead();
     Q_INVOKABLE QString getIp();
@@ -35,6 +37,9 @@ public:
     bool isTargetSelectRole() const;
     void setIsTargetSelectRole(bool newIsTargetSelectRole);
 
+    int port() const;
+    void setPort(int newPort);
+
 signals:
 
     void targetMessageChanged();
@@ -47,6 +52,8 @@ signals:
 
     void isTargetSelectRoleChanged();
 
+    void portChanged();
+
 private:
     QUdpSocket *m_udpSocket;
     int m_port = 6666;
@@ -56,7 +63,7 @@ private:
     QString m_targetName;
     QString m_targetRoleName;
     bool m_isTargetSelectRole = false;
-    Q_PROPERTY(bool isTargetSelectRole READ isTargetSelectRole WRITE setIsTargetSelectRole NOTIFY isTargetSelectRoleChanged)
+
 };
 
 #endif // Conn_H

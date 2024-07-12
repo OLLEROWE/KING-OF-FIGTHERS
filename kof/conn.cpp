@@ -117,6 +117,19 @@ void Conn::setIsTargetSelectRole(bool newIsTargetSelectRole)
     emit isTargetSelectRoleChanged();
 }
 
+int Conn::port() const
+{
+    return m_port;
+}
+
+void Conn::setPort(int newPort)
+{
+    if (m_port == newPort)
+        return;
+    m_port = newPort;
+    emit portChanged();
+}
+
 
 
 void Conn::onSocketReadyRead()
