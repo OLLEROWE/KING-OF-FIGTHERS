@@ -21,6 +21,7 @@ EntityBase {
     property int timedelta: 10
     property int hp: 100
     property var count : [0, 23, 8, 8, 12, 6, 6, 7, 10, 12, 12, 12, 11, 12, 6, 6, 8, 7, 23,23,23,14,28,19,12,29,17,16,63,10,10,12]
+    property bool isNetGame: false
     signal keysChanged()
     signal positionChanged()
     GameAnimatedSprite{
@@ -47,7 +48,7 @@ EntityBase {
         interval: 50
         onTriggered: {
             Controller.update_move(player)
-            Controller.update_control(player)
+            Controller.update_control(player,isNetGame,isLeftPlayer)
             Controller.update_attack(player)
             Controller.update_direction(player)
             Controller.render(player,image,count,4)

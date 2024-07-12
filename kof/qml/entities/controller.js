@@ -12,16 +12,38 @@ function update_move(player){
         player.x = player.parent.width -player.width;
     }
 }
-function update_control(player){
+function update_control(player,isNetGame,isLeftPlayer){
     let up, left, right, down, A, B, C, D;
-    up = pressed_keys.has(Qt.Key_Up) || player.twoAxisController.yAxis > 0.6;
-    left = pressed_keys.has(Qt.Key_Left) || player.twoAxisController.xAxis < -0.6;
-    right = pressed_keys.has(Qt.Key_Right) || player.twoAxisController.xAxis > 0.6;
-    down = pressed_keys.has(Qt.Key_Down) || player.twoAxisController.yAxis < -0.6;
-    A = pressed_keys.has(Qt.Key_A)
-    B = pressed_keys.has(Qt.Key_S)
-    C = pressed_keys.has(Qt.Key_D)
-    D = pressed_keys.has(Qt.Key_F)
+    if(isNetGame){
+        up = pressed_keys.has(Qt.Key_Up) || player.twoAxisController.yAxis > 0.6;
+        left = pressed_keys.has(Qt.Key_Left) || player.twoAxisController.xAxis < -0.6;
+        right = pressed_keys.has(Qt.Key_Right) || player.twoAxisController.xAxis > 0.6;
+        down = pressed_keys.has(Qt.Key_Down) || player.twoAxisController.yAxis < -0.6;
+        A = pressed_keys.has(Qt.Key_A)
+        B = pressed_keys.has(Qt.Key_S)
+        C = pressed_keys.has(Qt.Key_D)
+        D = pressed_keys.has(Qt.Key_F)
+    }else if(!isNetGame && isLeftPlayer){
+        up = pressed_keys.has(Qt.Key_W)
+        left = pressed_keys.has(Qt.Key_A)
+        right = pressed_keys.has(Qt.Key_D)
+        down = pressed_keys.has(Qt.Key_S)
+        A = pressed_keys.has(Qt.Key_U)
+        B = pressed_keys.has(Qt.Key_I)
+        C = pressed_keys.has(Qt.Key_J)
+        D = pressed_keys.has(Qt.Key_K)
+    }else if(!isNetGame && !isLeftPlayer){
+        up = pressed_keys.has(Qt.Key_Up)
+        left = pressed_keys.has(Qt.Key_Left)
+        right = pressed_keys.has(Qt.Key_Right)
+        down = pressed_keys.has(Qt.Key_Down)
+        A = pressed_keys.has(Qt.Key_1)
+        B = pressed_keys.has(Qt.Key_2)
+        C = pressed_keys.has(Qt.Key_4)
+        D = pressed_keys.has(Qt.Key_5)
+    }
+
+
 
     if(player.status === 1){
         if(A || B || C || D){
