@@ -41,28 +41,13 @@ Scene {
         // this displays all bodies, joints and forces which is great for debugging
         debugDrawVisible: false
     }
-    BackGround{
-
-    }
 
     Land{
         id:land
         anchors.bottom: parent.bottom
     }
-    Player{
-        id:player1
-        x:scene.width/4
-        anchors.bottom: land.top
-        // whenever the thumb position changes, update the twoAxisController
-        twoAxisController.xAxis: joystickController.controllerXPosition
-        twoAxisController.yAxis: joystickController.controllerYPosition
-    }
-    Player{
-        id:player2
-        x:3*scene.width/4 - width
-        anchors.bottom: land.top
-        isLeftPlayer: false
-    }
+
+
 
     Rectangle{
         width: 50

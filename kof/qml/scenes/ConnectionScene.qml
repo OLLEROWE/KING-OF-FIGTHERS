@@ -11,29 +11,42 @@ Scene {
     property Loader loaderContext  // 接收 Loader 作为上下文
     signal selection()
     RowLayout{
-        spacing: 50
+        spacing: 10
         anchors.centerIn: parent
-                TextField{
-                    text:conn.getUserName()
-                    enabled: false
-                }
-                TextField{
-                    text:conn.getIp()
-                    enabled: false
-                }
-                TextField{
-                    id:targetIp
-                    text:conn.getIp()
-                }
+        TextField{
+            text:conn.getUserName()
+            enabled: false
+        }
+
+        TextField{
+            text:conn.getIp()
+            enabled: false
+        }
+        TextField{
+            id:port
+            text:"6666"
+            enabled: false
+        }
+        TextField{
+            id:targetIp
+            text:conn.getIp()
+        }
+        TextField{
+            id:targetPort
+            text:"6666"
+            enabled: false
+        }
         Button{
             text:"确定"
             onClicked:{
                 selection()//触发信号
-                conn.setTargetIpAndPort(targetIp.text,6666)
+                conn.setPort(port.text)
+                conn.setTargetIpAndPort(targetIp.text,targetPort.text)
             }
             Keys.onReturnPressed: {
                 selection()//触发信号
-                conn.setTargetIpAndPort(targetIp.text,6666)
+                conn.setPort(port.text)
+                conn.setTargetIpAndPort(targetIp.text,targetPort.text)
             }
         }
 

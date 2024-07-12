@@ -1,25 +1,76 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Felgo
 import "../common"
-
-Rectangle {
+Scene {
 
     signal startBattle
     width: parent.width
     height: parent.height
-    color: "#000000" // 拳皇97风格的背景色
-
+//    color: "#000000" // 拳皇97风格的背景色
+    property bool isNetGame: false
     property int countdown: 600 // 倒计时的初始值
     property var characterNames: ["Andy", "Chizuru", "Goro", "Joe", "Kula", "Kyo", "Lori", "Ryuji", "Mai"]  //角色名称数组
     property int currentPlayer: 1
     property int currentSelection: -1 // 当前选择的角色 (0-8 对应九宫格的索引)
-    property int player1Selection: -1 // Player1 选择的角色 (-1 表示未选择)
-    property int player2Selection
-    property string player1SelectionName: "Kyo"
-    property string player2SelectionName: "Kyo"
+    property int player1Selection: 0 // Player1 选择的角色 (-1 表示未选择)
+    property int player2Selection:0
+    property string player1SelectionName: characterNames[player1Selection]
+    property string player2SelectionName: characterNames[player2Selection]
     property bool gridViewEnabled: true
     property int index: characterNames.findIndex(name => name === conn.targetRoleName);
+    property string currentImagePath1: "../../assets/img/selection/1.jpg";
+    property string currentImagePath2: "../../assets/img/selection/1.jpg";
+    property bool player1Identify: false
+    property bool player2Identify: false
+
+    focus: true
+    Keys.onPressed:
+        (e)=>{
+            let s1 = currentImagePath1.lastIndexOf('/')
+            let s2 = currentImagePath2.lastIndexOf('/')
+            let currentIndex1 = currentImagePath1.substring(s1 + 1,s1 + 2)
+            let currentIndex2 = currentImagePath2.substring(s2 + 1,s2 + 2)
+            console.log(e.key,"-----------",currentIndex2)
+            if(e.key === Qt.Key_W && currentIndex1 > 3)
+                currentIndex1 -=3
+            else if(e.key === Qt.Key_A && currentIndex1 > 1)
+                currentIndex1 -=1
+            else if(e.key === Qt.Key_S && currentIndex1 < 7)
+                currentIndex1 = Number(currentIndex1) + 3
+            else if(e.key === Qt.Key_D && currentIndex1 < 9)
+                currentIndex1 = Number(currentIndex1) + 1
+            else if(e.key === Qt.Key_Up && currentIndex2 > 3)
+                currentIndex2 -=3
+            else if(e.key === Qt.Key_Left && currentIndex2 > 1)
+                currentIndex2 -=1
+            else if(e.key === Qt.Key_Down && currentIndex2 < 7)
+                currentIndex2 = Number(currentIndex2) + 3
+            else if(e.key === Qt.Key_Right && currentIndex2 < 9)
+                currentIndex2 = Number(currentIndex2) + 1
+            else if(e.key === Qt.Key_Enter){
+                console.log("aaa")
+                player2text.text = player2SelectionName
+                player2Selection = 0
+                gridViewEnabled = false
+                player2Identify = true
+            }
+            else if(e.key === Qt.Key_Return){
+                console.log("bbb")
+                gridView.selectImage(currentImagePath1)
+                player1text.text = player1SelectionName
+                player1Selection = 0
+                gridViewEnabled = false
+                player1Identify = true
+            }
+            player1Selection = currentIndex1 -1
+            player2Selection = currentIndex2 -1
+            currentImagePath1 = currentImagePath1.substring(0,s1 + 1) + currentIndex1 +".jpg"
+            currentImagePath2 = currentImagePath2.substring(0,s2 + 1) + currentIndex2 +".jpg"
+            gridView.previewImage(currentImagePath1)
+            play2.source = currentImagePath2
+        }
 
     onVisibleChanged: {
         if (visible) {
@@ -28,7 +79,16 @@ Rectangle {
             countdownTimer.stop()
         }
     }
-
+    function newselect(){
+               play1.source =""
+               play2.source =""
+               gridViewEnabled= true
+               player1Selection = -1
+               player2Selection = -1
+               countdownTimer.start()
+               opacityAnimation.to = 0.5
+               opacityAnimation.running=false
+       }
     Timer {
         id: countdownTimer
         interval: 1000 // 每秒触发一次
@@ -40,15 +100,31 @@ Rectangle {
                 countdownTimer.stop()
                 startBattle()
             }
-            checkselect()
+//            checkselect()
+            if(conn.isTargetSelectRole)
+                player2Identify = true
+            if(player1Identify && player2Identify)
+                timer.running = true
+            console.log(player1Identify,player2Identify,"==========",conn.isTargetSelectRole)
+//            isNetGame ? "../../assets/img/selection/" + (index + 1) + ".jpg" :currentImagePath2
         }
     }
+    Timer{
+        id:timer
+        interval: 2000
+        repeat: true
+        running: false
+        onTriggered: startBattle()
+
+    }
+
     // 中央布局
     Column {
+        id:co
         anchors.centerIn: parent
         spacing: 10
         width:parent.width*0.5
-        height:parent.height
+        height:parent.height*0.6
 
         // "TIME" 文本
         Text {
@@ -122,7 +198,7 @@ Rectangle {
                 Image {
                     id:play1
                     anchors.fill: parent
-                    source: ""
+                    source: currentImagePath1
                     fillMode: Image.PreserveAspectFit
                 }
             }
@@ -131,7 +207,7 @@ Rectangle {
 
                 id: gridView
                 width: 300
-                height: 500  // 剩余的高度用于 GridView
+                height: 300  // 剩余的高度用于 GridView
                 //anchors.fill: parent
 
                 model: 9 // 九宫格总数
@@ -152,6 +228,7 @@ Rectangle {
                         console.log("Index:", model.index, "ImagePath:", imagePath);
                         return imagePath;
                     }
+
                     TapHandler {
                         id:_chose
                         enabled: true
@@ -159,20 +236,26 @@ Rectangle {
                             if (gridViewEnabled){
                                 console.log("Single click:------- ", imageName)
                                 gridView.previewImage(imageName)
+                                currentImagePath1 = imageName
+                                player1SelectionName = characterNames[model.index]
                             }
-                            conn.sendMessage(0,characterNames[model.index ])
+                            if(isNetGame)
+                                conn.sendMessage(0,characterNames[model.index ])
                         }
                         onDoubleTapped: {
                             if (gridViewEnabled){
                                 console.log("Double click: ", imageName)
-                                player1SelectionName = characterNames[model.index ]
+                                player1SelectionName = characterNames[model.index]
                                 console.log("aaaadadawdaw " + player1SelectionName)
                                 gridView.selectImage(imageName)
                                 player1text.text = player1SelectionName
                                 player1Selection = 0
                                 gridViewEnabled = false
-                                conn.sendMessage(0,characterNames[model.index ])
-                                conn.sendMessage(2,true)
+                                player1Identify = true
+                                if(isNetGame){
+                                    conn.sendMessage(0,characterNames[model.index ])
+                                    conn.sendMessage(2,true)
+                                }
                             }
                         }
                     }
@@ -262,7 +345,7 @@ Rectangle {
                 Image {
                     id:play2
                     anchors.fill: parent
-                    source: gridView.currentIndex >= 0 ? "../../assets/img/selection/" + (index + 1) + ".jpg": ""
+                    source: isNetGame ? "../../assets/img/selection/" + (index + 1) + ".jpg" :currentImagePath2
                     fillMode: Image.PreserveAspectFit
                 }
             }
@@ -274,36 +357,17 @@ Rectangle {
 
 
     }
-    // 开始游戏按钮
-    Button {
-        id:_begain
-        text: "开始游戏"
-        width: parent.width / 3
-        anchors.bottomMargin : parent.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
 
-        TapHandler{
-            id:chose
-            enabled: false
-            onTapped:{
-                countdownTimer.stop() // 停止计时器
-
-                startBattle()
-            }
-        }
-    }
-    function checkselect(){
-        if( player1Selection!=-1&& player2Selection!= -1 ){
-            chose.enabled =true
-        }
-    }
+//    function checkselect(){
+//        if( player1Selection!=-1&& player2Selection!= -1 ){
+//            chose.enabled =true
+//        }
+//    }
     Connections{
         target: conn
         function onTargetRoleNameChanged(){
             player2SelectionName = conn.targetRoleName
             player2text.text = conn.targetRoleName
-            console.log(characterNames[model.index ]+ "---" + player2text.text + "------------------")
-
         }
     }
 

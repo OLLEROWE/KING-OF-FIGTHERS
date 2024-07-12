@@ -12,6 +12,7 @@ Scene {
     property alias scene: scene
     property var player1
     property var conn
+    property bool isNetGame: false
     id: scene
     anchors.fill: parent
 
@@ -55,21 +56,19 @@ Scene {
 
     }
 
-    MessageDialog {
-        id:gameOverText
-        informativeText: "Do you want to keep playing?"
-        buttons: MessageDialog.Ok | MessageDialog.Cancel
-        onAccepted:{
-            goSelect();
-        }
-        onRejected: {
-            goStart()
-        }
-    }
-    BackgroundMusic {
-        id: backgroundMusic
-        source: Qt.resolvedUrl("../../assets/vedio/bgc.mp3")
-    }
+    function newbattle(){
+            message.visible = false
+
+           Globals.player1=null
+           Globals.player2=null
+           console.log("----------------"+Globals.player1.width)
+
+       }
+
+//    BackgroundMusic {
+//        id: backgroundMusic
+//        source: Qt.resolvedUrl("../../assets/vedio/bgc.mp3")
+//    }
     PhysicsWorld {
         id: world
         // physics is disabled initially, and enabled after the splash is finished
@@ -89,9 +88,88 @@ Scene {
     GameMap{
 
     }
+    Timer{
+        id:_timer
+        running: true
+        repeat: true
+        interval: 50
+        onTriggered: {
+            hp1 = gethp1()
+            hp2 = gethp2()
+            if(hp1 ===0){
+                message.visible = true
+               text.text = "you lose"
+            }
+            if(hp2 === 0){
+                message.visible = true
+                text.text = "you win"
+            }
+
+        }
+    }
     property int hp1: gethp1()
     property int hp2: gethp2()
+    Column {
+            id:message
+            width: parent.width/4
+            height: parent.height/6
+              anchors.centerIn: parent
+              spacing: 10
+              visible: false
 
+              Rectangle {
+                  width: parent.width
+                  height: parent.height
+                  color: "White"
+                  opacity: 0.3
+
+                  Text {
+                      id:text
+                      text: "chose game again or not!"
+                      anchors.centerIn: parent
+                      color: "white"
+                      font.pointSize: 20
+
+                  }
+              }
+
+              Row {
+                  spacing: 20
+                  anchors.horizontalCenter: parent.horizontalCenter
+
+                  Button {
+                      text: "OK"
+                      onClicked: {
+                          message.visible=false
+                          text.text="chose game again or not!"
+                          hp1=100
+                          hp2 =100
+                          goSelect();
+                          // 在这里添加点击OK按钮时的逻辑
+                          clock.newclock()
+                          Globals.player1=null
+                         Globals.player2=null
+
+
+                      }
+                  }
+
+                  Button {
+                      text: "Close"
+                      onClicked: {
+                           message.visible=false
+                          text.text="chose game again or not!"
+                          hp1=100
+                          hp2 =100
+                          clock.newclock()
+
+                           goStart()
+                           Globals.player1=null
+                          Globals.player2=null
+                      }
+                  }
+              }
+          }
     RowLayout{
         y:30
         width: parent.width
@@ -101,24 +179,28 @@ Scene {
             hp:hp1
             Layout.fillWidth: true
             onLose: {
-                gameOverText.text = "You Lose!!!"
-                gameOverText.visible = true
-                gameOver()
+                message.visible= true
+                               text.text="you lose"
             }
             name:conn.getUserName()
         }
         Clock{
-            id:clock
-        }
+                   id:clock
+                   onTimeover: {
+                       message.visible=true
+
+                   }
+               }
         HealthBar{
             id:player2HpBar
             hp:hp2
             Layout.fillWidth: true
             onLose: {
-                gameOverText.text = "You Win!!!"
-                gameOverText.visible = true
-                gameOver()
-            }
+                           message.visible= true
+
+                            text.text="you win"
+
+                       }
             name:conn.targetName
         }
 
@@ -198,20 +280,7 @@ Scene {
     }
 
 
-    Timer{
-        id:_timer
-        running: true
-        repeat: true
-        interval: 50
-        onTriggered: {
-            hp1 = gethp1()
-            hp2 = gethp2()
-            console.log(Controller.players.length + "--------------")
-            console.log(hp1 + "--------------0")
-            console.log(hp2  + "--------------1")
 
-        }
-    }
     function gethp1(){
         if(Controller.players.length === 2)
             return Controller.players[0].hp
@@ -237,6 +306,7 @@ Scene {
             playerObject.anchors.bottom = land.top
             Globals.player1 = playerObject; // 存储全局引用
             //initializeController(playerObject)
+            Globals.player1.isNetGame = isNetGame
             Controller.players.push(playerObject)
             console.log(Controller.players.length + "1--------------")
             return playerObject; // 返回创建的玩家对象
@@ -257,6 +327,7 @@ Scene {
             Globals.player2 = playerObject; // 存储全局引用
             Globals.player2.direction = -1
             Globals.player2.isLeftPlayer = false
+            Globals.player1.isNetGame = isNetGame
             Controller.players.push(playerObject)
             console.log(Controller.players.length + "2--------------")
         } else {
