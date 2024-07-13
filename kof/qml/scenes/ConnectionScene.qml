@@ -10,7 +10,7 @@ Scene {
     anchors.fill: parent
     property Loader loaderContext  // 接收 Loader 作为上下文
     signal selection()
-    RowLayout{
+    ColumnLayout{
         spacing: 10
         anchors.centerIn: parent
         TextField{
@@ -36,6 +36,7 @@ Scene {
         }
         Button{
             text:"确定"
+
             onClicked:{
                 conn.port = Number(port.text)
                 conn.targetIp = targetIp.text
