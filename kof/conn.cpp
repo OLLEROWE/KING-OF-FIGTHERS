@@ -10,18 +10,20 @@ Conn::Conn(QObject *parent)
     : QObject{parent}
 {
     m_udpSocket = new QUdpSocket(this);
-    m_udpSocket->bind(m_port,QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
 
     connect(m_udpSocket,&QUdpSocket::readyRead,this,&Conn::onSocketReadyRead);
 }
 
 void Conn::sendMessage(int type, QString msg)
 {
+    if(m_targetIp.isEmpty() || m_targetPort == 0)
+        return;
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
     out << type << getUserName() << msg;
     QHostAddress targetAddr(m_targetIp);
     m_udpSocket->writeDatagram(data, targetAddr, m_targetPort); //发出数据报
+    qDebug() << type << "my ip" << getIp() << "my port:" << port() << "===sent message to ip:"<< targetIp() << "port:" << targetPort() << "message:"<< msg;
 
 }
 
@@ -58,12 +60,7 @@ QString Conn::getUserName()
 }
 
 
-void Conn::setTargetIpAndPort(const QString &ip, const int &port)
-{
-    m_targetIp = ip;
-    m_targetPort = port;
-    qDebug() << m_targetIp << m_targetPort;
-}
+
 
 QString Conn::targetMessage() const
 {
@@ -127,7 +124,48 @@ void Conn::setPort(int newPort)
     if (m_port == newPort)
         return;
     m_port = newPort;
+    m_udpSocket->bind(m_port,QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
     emit portChanged();
+}
+
+bool Conn::firstConn() const
+{
+    return m_firstConn;
+}
+
+void Conn::setFirstConn(bool newFirstConn)
+{
+    if (m_firstConn == newFirstConn)
+        return;
+    m_firstConn = newFirstConn;
+    emit firstConnChanged();
+}
+
+int Conn::targetPort() const
+{
+    return m_targetPort;
+}
+
+void Conn::setTargetPort(int newTargetPort)
+{
+    if (m_targetPort == newTargetPort)
+        return;
+    m_targetPort = newTargetPort;
+    qDebug() << newTargetPort << m_targetPort;
+    emit targetPortChanged();
+}
+
+QString Conn::targetIp() const
+{
+    return m_targetIp;
+}
+
+void Conn::setTargetIp(const QString &newTargetIp)
+{
+    if (m_targetIp == newTargetIp)
+        return;
+    m_targetIp = newTargetIp;
+    emit targetIpChanged();
 }
 
 
@@ -140,13 +178,15 @@ void Conn::onSocketReadyRead()
     {
         QByteArray datagram;
         datagram.resize(m_udpSocket->pendingDatagramSize());
-        m_udpSocket->readDatagram(datagram.data(), datagram.size());
+        QHostAddress peerAddr;
+        quint16 peerPort;
+        m_udpSocket->readDatagram(datagram.data(),datagram.size(),&peerAddr,&peerPort);
         QDataStream in(&datagram, QIODevice::ReadOnly);
         int messageType;
         QString userName, message;
         in >> messageType >> userName >> message;
         setTargetName(userName);
-        qDebug() << "ass" << message << userName;
+        qDebug() <<"===from ip:" << peerAddr.toString() << "port:" <<QString::number(peerPort) <<"message:" << message;
         switch (messageType) {
         case 0:{
             if(!m_isTargetSelectRole)
@@ -158,6 +198,8 @@ void Conn::onSocketReadyRead()
             break;
         case 2:
             setIsTargetSelectRole(true);
+        case 3:
+            m_firstConn = true;
         default:
             break;
         }

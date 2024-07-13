@@ -12,17 +12,19 @@ class Conn : public QObject
     QML_ELEMENT
 public:
     Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
+    Q_PROPERTY(bool firstConn READ firstConn WRITE setFirstConn NOTIFY firstConnChanged)
     Q_PROPERTY(QString targetMessage READ targetMessage WRITE setTargetMessage NOTIFY targetMessageChanged)
     Q_PROPERTY(QString targetName READ targetName WRITE setTargetName NOTIFY targetNameChanged)
     Q_PROPERTY(QString targetRoleName READ targetRoleName WRITE setTargetRoleName NOTIFY targetRoleNameChanged)
     Q_PROPERTY(bool isTargetSelectRole READ isTargetSelectRole WRITE setIsTargetSelectRole NOTIFY isTargetSelectRoleChanged)
+    Q_PROPERTY(int targetPort READ targetPort WRITE setTargetPort NOTIFY targetPortChanged)
+    Q_PROPERTY(QString targetIp READ targetIp WRITE setTargetIp NOTIFY targetIpChanged)
     explicit Conn(QObject *parent = nullptr);
     void onSocketReadyRead();
     Q_INVOKABLE QString getIp();
     Q_INVOKABLE QString getUserName();
     Q_INVOKABLE void sendMessage(int type,QString msg = "");
 
-    Q_INVOKABLE void setTargetIpAndPort(const QString &ip,const int &port);
     QString targetMessage() const;
     void setTargetMessage(const QString &newTargetMessage);
 
@@ -40,6 +42,15 @@ public:
     int port() const;
     void setPort(int newPort);
 
+    bool firstConn() const;
+    void setFirstConn(bool newFirstConn);
+
+    int targetPort() const;
+    void setTargetPort(int newTargetPort);
+
+    QString targetIp() const;
+    void setTargetIp(const QString &newTargetIp);
+
 signals:
 
     void targetMessageChanged();
@@ -54,15 +65,23 @@ signals:
 
     void portChanged();
 
+    void firstConnChanged();
+
+    void targetPortChanged();
+
+    void targetIpChanged();
+
 private:
     QUdpSocket *m_udpSocket;
-    int m_port = 6666;
+    int m_port;
     QString m_targetIp;
-    int m_targetPort = 6666;
+    int m_targetPort;
     QString m_targetMessage;
     QString m_targetName;
     QString m_targetRoleName;
+    bool m_firstConn = false;
     bool m_isTargetSelectRole = false;
+
 
 };
 
