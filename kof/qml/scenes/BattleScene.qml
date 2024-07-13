@@ -41,6 +41,24 @@ Scene {
 
         // 当控制器X位置改变时，更新玩家对象的X轴
         onControllerXPositionChanged: {
+            if(controllerXPosition > 0.6) {
+                Globals.player1.pressed_keys.add(Qt.Key_Right);changed();
+            }else if(controllerXPosition < -0.6) {
+                Globals.player1.pressed_keys.add(Qt.Key_Left);changed();
+            }else{
+                Globals.player1.pressed_keys.delete(Qt.Key_Left);changed();
+                Globals.player1.pressed_keys.delete(Qt.Key_Right);changed();
+            }
+
+            if(controllerYPosition < -0.6){
+                Globals.player1.pressed_keys.add(Qt.Key_Down);changed();
+            }else if(controllerYPosition > 0.6){
+                Globals.player1.pressed_keys.add(Qt.Key_Up);changed();
+            }else{
+                Globals.player1.pressed_keys.delete(Qt.Key_Up);changed();
+                Globals.player1.pressed_keys.delete(Qt.Key_Down);changed();
+            }
+
             if (playerTwoxisController) {
                 playerTwoxisController.xAxis = controllerXPosition;
             }
@@ -61,10 +79,10 @@ Scene {
 
     }
 
-        BackgroundMusic {
-            id: backgroundMusic
-            source: Qt.resolvedUrl("../../assets/vedio/bgc.mp3")
-        }
+    BackgroundMusic {
+        id: backgroundMusic
+        source: Qt.resolvedUrl("../../assets/vedio/bgc.mp3")
+    }
     PhysicsWorld {
         id: world
         // physics is disabled initially, and enabled after the splash is finished
@@ -185,13 +203,10 @@ Scene {
         visible: !system.desktopPlatform // 根据平台显示或隐藏
 
         onClick:{
-            Controller.pressed_keys.add(Qt.Key_A)
-            console.log(Globals.player1.speedx)
-            Globals.player1.keysChanged()
+            Globals.player1.pressed_keys.add(Qt.Key_A);changed();
         }
         onCancel: {
-            Controller.pressed_keys.delete(Qt.Key_A)
-            Globals.player1.keysChanged()
+            Globals.player1.pressed_keys.delete(Qt.Key_A);changed();
         }
     }
     MyButton{
@@ -202,12 +217,10 @@ Scene {
 
         text: "B"
         onClick:{
-            Controller.pressed_keys.add(Qt.Key_S)
-            Globals.player1.keysChanged()
+            Globals.player1.pressed_keys.add(Qt.Key_S);changed();
         }
         onCancel: {
-            Controller.pressed_keys.delete(Qt.Key_S)
-            Globals.player1.keysChanged()
+            Globals.player1.pressed_keys.delete(Qt.Key_S);changed();
         }
     }
     focus:true
@@ -220,12 +233,10 @@ Scene {
         visible: !system.desktopPlatform // 根据平台显示或隐藏
 
         onClick:{
-            Globals.player1.pressed_keys.add(Qt.Key_D)
-            Globals.player1.keysChanged()
+            Globals.player1.pressed_keys.add(Qt.Key_D);changed();
         }
         onCancel: {
-            Globals.player1.pressed_keys.delete(Qt.Key_D)
-            Globals.player1.keysChanged()
+            Globals.player1.pressed_keys.delete(Qt.Key_D);changed();
         }
     }
     MyButton{
@@ -236,12 +247,10 @@ Scene {
         visible: !system.desktopPlatform // 根据平台显示或隐藏
 
         onClick:{
-            Globals.player1.pressed_keys.add(Qt.Key_F)
-            Globals.player1.keysChanged()
+            Globals.player1.pressed_keys.add(Qt.Key_F);changed();
         }
         onCancel: {
-            Globals.player1.pressed_keys.delete(Qt.Key_F)
-            Globals.player1.keysChanged()
+            Globals.player1.pressed_keys.delete(Qt.Key_F);changed();
         }
     }
 
