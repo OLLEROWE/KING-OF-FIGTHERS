@@ -4,10 +4,11 @@ import QtQuick
 import QtQuick.Controls
 import "scenes"
 import "common"
+import "./scenes/globals.js" as Globals
 GameWindow {
     id: gameWindow
     property alias selectscene: selectScene
-      property alias battlescene: battleScene
+    property alias battlescene: battleScene
     // You get free licenseKeys from https://felgo.com/licenseKey
     // With a licenseKey you can:
     //  * Publish your games & apps for the app stores
@@ -49,22 +50,76 @@ GameWindow {
 
     }
     BattleScene {
-         id:battleScene;
-         visible: false
-         onGoSelect:{
-             gameWindow.state="selection"
-             selectscene.newselect()
-             battlescene.newbattle()
-         }
-         onGoStart: {
+        id:battleScene;
+        visible: false
+        onGoSelect:{
+            gameWindow.state="selection"
+            selectscene.newselect()
+            battlescene.newbattle()
+        }
+        onGoStart: {
 
-             gameWindow.state="menu"
-             selectscene.newselect()
-             battlescene.newbattle()
-         }
-     }
+            gameWindow.state="menu"
+            selectscene.newselect()
+            battlescene.newbattle()
+        }
+        onChanged:{
+            timer2.start()
+        }
+    }
 
+    Timer{
+        id:timer2
+        running: false
+        repeat: true
+        interval: 50
+        onTriggered: {
+            let s = ""
+            for(let key of battleScene.playerrole1.pressed_keys) {
+                s += key + "|"
+            }
+            conn.sentKeys = s
+            conn.sendMessage(1,s)
+            conn.sentKeys = ""
+            timer2.stop()
+        }
+    }
+    property var keys: new Set
+    Connections{
+        target:conn
+        function onTargetMessageChanged(){
+            keys.clear()
+            console.log("shoudaoxinxile1=====================",conn.targetMessage)
+            let msg = conn.targetMessage
+            let parts = msg.split("|")
 
+            for(let i of parts){
+                console.log(i)
+                addKey(keys,i)
+            }
+
+            console.log("=====",keys.size)
+            battleScene.player2Keys = keys
+        }
+    }
+    function addKey(keys,part){
+        if(part == 16777236)
+            keys.add(Qt.Key_Left)
+        else if(part == 16777234)
+            keys.add(Qt.Key_Right)
+        else if(part == 16777235)
+            keys.add(Qt.Key_Up)
+        else if(part == 16777237)
+            keys.add(Qt.Key_Down)
+        else if(part == 65)
+            keys.add(Qt.Key_A)
+        else if(part == 83)
+            keys.add(Qt.Key_S)
+        else if(part == 68)
+            keys.add(Qt.Key_D)
+        else if(part == 70)
+            keys.add(Qt.Key_F)
+    }
     SettingsScene{
         id:settingsScene;
         visible: false
