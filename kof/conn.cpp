@@ -12,6 +12,7 @@ Conn::Conn(QObject *parent)
     m_udpSocket = new QUdpSocket(this);
 
     connect(m_udpSocket,&QUdpSocket::readyRead,this,&Conn::onSocketReadyRead);
+
 }
 
 void Conn::sendMessage(int type, QString msg)
@@ -168,6 +169,19 @@ void Conn::setTargetIp(const QString &newTargetIp)
     emit targetIpChanged();
 }
 
+QString Conn::sentKeys() const
+{
+    return m_sentKeys;
+}
+
+void Conn::setSentKeys(const QString &newSentKeys)
+{
+    if (m_sentKeys == newSentKeys)
+        return;
+    m_sentKeys = newSentKeys;
+    emit sentKeysChanged();
+}
+
 
 
 void Conn::onSocketReadyRead()
@@ -194,6 +208,7 @@ void Conn::onSocketReadyRead()
             }
             break;
         case 1:
+            qDebug() << "shoudaoxinxile1";
             setTargetMessage(message);
             break;
         case 2:

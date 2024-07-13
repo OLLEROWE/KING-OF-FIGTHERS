@@ -20,6 +20,8 @@ public:
     Q_PROPERTY(int targetPort READ targetPort WRITE setTargetPort NOTIFY targetPortChanged)
     Q_PROPERTY(QString targetIp READ targetIp WRITE setTargetIp NOTIFY targetIpChanged)
     explicit Conn(QObject *parent = nullptr);
+    Q_PROPERTY(QString sentKeys READ sentKeys WRITE setSentKeys NOTIFY sentKeysChanged)
+
     void onSocketReadyRead();
     Q_INVOKABLE QString getIp();
     Q_INVOKABLE QString getUserName();
@@ -51,6 +53,9 @@ public:
     QString targetIp() const;
     void setTargetIp(const QString &newTargetIp);
 
+    QString sentKeys() const;
+    void setSentKeys(const QString &newSentKeys);
+
 signals:
 
     void targetMessageChanged();
@@ -71,6 +76,8 @@ signals:
 
     void targetIpChanged();
 
+    void sentKeysChanged();
+
 private:
     QUdpSocket *m_udpSocket;
     int m_port;
@@ -81,7 +88,7 @@ private:
     QString m_targetRoleName;
     bool m_firstConn = false;
     bool m_isTargetSelectRole = false;
-
+    QString m_sentKeys;
 
 };
 
