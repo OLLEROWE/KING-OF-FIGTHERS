@@ -17,6 +17,7 @@ Scene {
     property var playerrole1
     property var playerrole2
     property var player2Keys: new Set
+    property int myHp: 100
     anchors.fill: parent
 
     signal goSelect
@@ -40,40 +41,30 @@ Scene {
 
         // 当控制器X位置改变时，更新玩家对象的X轴
         onControllerXPositionChanged: {
-
             if (playerTwoxisController) {
-
                 playerTwoxisController.xAxis = controllerXPosition;
-
             }
-
         }
 
         onControllerYPositionChanged: {
-
             if (playerTwoxisController) {
-
                 playerTwoxisController.yAxis = controllerYPosition;
-
             }
-
         }
-
     }
 
     function newbattle(){
         message.visible = false
-
         Globals.player1=null
         Globals.player2=null
         console.log("----------------" + Globals.player1.width)
 
     }
 
-    //    BackgroundMusic {
-    //        id: backgroundMusic
-    //        source: Qt.resolvedUrl("../../assets/vedio/bgc.mp3")
-    //    }
+        BackgroundMusic {
+            id: backgroundMusic
+            source: Qt.resolvedUrl("../../assets/vedio/bgc.mp3")
+        }
     PhysicsWorld {
         id: world
         // physics is disabled initially, and enabled after the splash is finished
@@ -151,7 +142,7 @@ Scene {
         spacing: 20
         HealthBar{
             id:player1HpBar
-            hp:hp1
+            hp: isNetGame ? myHp : hp1
             Layout.fillWidth: true
             onLose: {
                 message.visible= true
