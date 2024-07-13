@@ -22,7 +22,7 @@ Scene {
     FontLoader {
            id: arcadeFont
            source: "../../assets/fonts/Arcade Classic.ttf"
-       }
+    }
     AnimatedImage{
         anchors.fill: parent
         source: "../../assets/img/bgc/" + getRandomInt(1, 23) + ".gif"

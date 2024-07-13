@@ -14,9 +14,9 @@ Scene {
     GameMap{
 
     }
+    anchors.fill: parent
 
     ColumnLayout{
-//        anchors.fill: parent
         anchors.centerIn: parent
         Button {
             id: btn1

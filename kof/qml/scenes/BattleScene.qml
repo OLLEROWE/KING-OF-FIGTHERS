@@ -9,11 +9,14 @@ import "../scenes"
 import "../entities/controller.js" as Controller
 import "globals.js" as Globals
 Scene {
-    property alias scene: scene
+    id: scene
     property var player1
     property var conn
     property bool isNetGame: false
-    id: scene
+    property alias clock: clock
+    property var playerrole1
+    property var playerrole2
+    property var player2Keys: new Set
     anchors.fill: parent
 
     signal goSelect
@@ -63,7 +66,7 @@ Scene {
 
         Globals.player1=null
         Globals.player2=null
-        console.log("----------------"+Globals.player1.width)
+        console.log("----------------" + Globals.player1.width)
 
     }
 
@@ -94,8 +97,14 @@ Scene {
         id:_timer
         running: true
         repeat: true
-        interval: 50
+        interval: 100
         onTriggered: {
+            if(scene.visible){
+                Globals.player2.pressed_keys = player2Keys
+                console.log(Globals.player2.pressed_keys.size)
+                for(let i of Globals.player2.pressed_keys)
+                    console.log("Globals.player2.pressed_keys--",i)
+            }
             hp1 = gethp1()
             hp2 = gethp2()
             if(hp1 ===0){
@@ -126,7 +135,7 @@ Scene {
             opacity: 0.3
 
             Text {
-                id:text
+                id:_text
                 text: "chose game again or not!"
                 anchors.centerIn: parent
                 color: "white"
@@ -135,42 +144,6 @@ Scene {
             }
         }
 
-        Row {
-            spacing: 20
-            anchors.horizontalCenter: parent.horizontalCenter
-
-            Button {
-                text: "OK"
-                onClicked: {
-                    message.visible=false
-                    text.text="chose game again or not!"
-                    hp1=100
-                    hp2 =100
-                    goSelect();
-                    // 在这里添加点击OK按钮时的逻辑
-                    clock.newclock()
-                    Globals.player1=null
-                    Globals.player2=null
-
-
-                }
-            }
-
-            Button {
-                text: "Close"
-                onClicked: {
-                    message.visible=false
-                    text.text="chose game again or not!"
-                    hp1=100
-                    hp2 =100
-                    clock.newclock()
-
-                    goStart()
-                    Globals.player1=null
-                    Globals.player2=null
-                }
-            }
-        }
     }
     RowLayout{
         y:30
@@ -182,15 +155,16 @@ Scene {
             Layout.fillWidth: true
             onLose: {
                 message.visible= true
-                text.text="you lose"
+                _text.text="you lose"
             }
-            name:conn.getUserName()
+            name:conn.targetName
         }
         Clock{
             id:clock
             onTimeover: {
                 message.visible=true
-
+                Globals.player1.gameSprite.running = false
+                Globals.player2.gameSprite.running = false
             }
         }
         HealthBar{
@@ -199,8 +173,7 @@ Scene {
             Layout.fillWidth: true
             onLose: {
                 message.visible= true
-
-                text.text="you win"
+                _text.text="you win"
 
             }
             name:conn.targetName
@@ -256,11 +229,11 @@ Scene {
         visible: !system.desktopPlatform // 根据平台显示或隐藏
 
         onClick:{
-            Controller.pressed_keys.add(Qt.Key_D)
+            Globals.player1.pressed_keys.add(Qt.Key_D)
             Globals.player1.keysChanged()
         }
         onCancel: {
-            Controller.pressed_keys.delete(Qt.Key_D)
+            Globals.player1.pressed_keys.delete(Qt.Key_D)
             Globals.player1.keysChanged()
         }
     }
@@ -272,11 +245,11 @@ Scene {
         visible: !system.desktopPlatform // 根据平台显示或隐藏
 
         onClick:{
-            Controller.pressed_keys.add(Qt.Key_F)
+            Globals.player1.pressed_keys.add(Qt.Key_F)
             Globals.player1.keysChanged()
         }
         onCancel: {
-            Controller.pressed_keys.delete(Qt.Key_F)
+            Globals.player1.pressed_keys.delete(Qt.Key_F)
             Globals.player1.keysChanged()
         }
     }
@@ -306,6 +279,7 @@ Scene {
                 }
             }
             playerObject.anchors.bottom = land.top
+            playerrole1 = playerObject
             Globals.player1 = playerObject; // 存储全局引用
             //initializeController(playerObject)
             Globals.player1.isNetGame = isNetGame
@@ -331,7 +305,8 @@ Scene {
             Globals.player2 = playerObject; // 存储全局引用
             Globals.player2.direction = -1
             Globals.player2.isLeftPlayer = false
-            Globals.player1.isNetGame = isNetGame
+            Globals.player2.isNetGame = isNetGame
+            playerrole2 = playerObject
             Controller.players.push(playerObject)
             console.log(Controller.players.length + "2--------------")
         } else {
@@ -346,94 +321,33 @@ Scene {
 
 
     Keys.onPressed:
-        (e)=>{Controller.pressed_keys.add(e.key);changed();}
+        (e)=>{
+            if(isNetGame){
+                Globals.player1.pressed_keys.add(e.key);changed();
+            }else{
+                Globals.player1.pressed_keys.add(e.key);
+                Globals.player2.pressed_keys.add(e.key);
+            }
+        }
     Keys.onReleased:
-        (e)=>{Controller.pressed_keys.delete(e.key);changed()}
+        (e)=>{
+            if(isNetGame){
+                Globals.player1.pressed_keys.delete(e.key);
+                changed();
+                console.log("scene   onKeysChanged")
+
+            }else{
+                Globals.player1.pressed_keys.delete(e.key);
+                Globals.player2.pressed_keys.delete(e.key);
+            }
+        }
 
 
     Component.onDestruction:Controller.players.length = 0
-
-    property var keys: new Set
-    property string sent_keys: ""
-    Keys.forwardTo:[Globals.player1]
-    Connections{
-        target: scene
-        function onChanged(){
-            if(conn.firstConn){
-                console.log("scene   onKeysChanged")
-                sent_keys = ""
-                sent_keys += clock.time + "|"
-                for(let key of Globals.pressed_keys) {
-                  sent_keys += key + "|"
-                }
-                conn.sendMessage(1,sent_keys)
-                console.log("sendMessage" + sent_keys)
-            }
-
-
-        }
-    }
-
-    Connections{
-        target: Globals.player1
-        function onKeysChanged(){
-            console.log("onKeysChanged")
-
-        }
-//        function onPositionChanged(){
-//            console.log("onPositionChanged")
-//            sent_keys = ""
-//            sent_keys += clock.time + "|"
-//            if(player1.twoAxisController.xAxis > 0.6)
-//                sent_keys += Qt.Key_Left + "|"
-//            else if(player1.twoAxisController.xAxis < -0.6)
-//                sent_keys += Qt.Key_Right + "|"
-//            else if(player1.twoAxisController.yAxis > 0.6)
-//                sent_keys += Qt.Key_Up + "|"
-//            else if(player1.twoAxisController.yAxis < -0.6)
-//                sent_keys += Qt.Key_Down + "|"
-//            conn.sendMessage(1,sent_keys)
-//        }
-
-    }
 
 
     GameSoundEffect{
         id:_round
         source: Qt.resolvedUrl("../../assets/vedio/round1.mp3")
     }
-
-    Connections{
-        target:conn
-        function onTargetMessageChanged(){
-            keys.clear()
-            let msg = conn.targetMessage
-            let parts = msg.split("|")
-            if((clock.time - parts[0] > 1) ||(parts[0] - clock.time > 1))
-                clock.time = parts[0]
-            for(let i = 1;i<parts.length;i++)
-                addKey(parts[i])
-            player2.pressed_keys = keys
-        }
-    }
-    function addKey(part){
-        if(part === 68)
-            keys.add(Qt.Key_A)
-        else if(part === 87)
-            keys.add(Qt.Key_W)
-        else if(part === 65)
-            keys.add(Qt.Key_D)
-        else if(part === 83)
-            keys.add(Qt.Key_S)
-        else if(part === 85)
-            keys.add(Qt.Key_U)
-        else if(part === 73)
-            keys.add(Qt.Key_I)
-        else if(part === 74)
-            keys.add(Qt.Key_J)
-        else if(part ===75)
-            keys.add(Qt.Key_K)
-
-    }
-
 }

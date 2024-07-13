@@ -360,7 +360,7 @@ Scene {
                 Image {
                     id:play2
                     anchors.fill: parent
-                    source: isNetGame ? "../../assets/img/selection/" + (index + 1) + ".jpg" :currentImagePath2
+                    source: isNetGame ? "../../assets/img/selection/1.jpg" :currentImagePath2
                     fillMode: Image.PreserveAspectFit
                 }
             }
@@ -383,6 +383,7 @@ Scene {
         function onTargetRoleNameChanged(){
             player2SelectionName = conn.targetRoleName
             player2text.text = conn.targetRoleName
+            play2.source = "../../assets/img/selection/" + (index + 1) + ".jpg"
         }
     }
 
