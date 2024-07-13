@@ -33,21 +33,21 @@ Scene {
             let currentIndex1 = currentImagePath1.substring(s1 + 1,s1 + 2)
             let currentIndex2 = currentImagePath2.substring(s2 + 1,s2 + 2)
             console.log(e.key,"-----------",currentIndex2)
-            if(e.key === Qt.Key_W && currentIndex1 > 3)
+            if(e.key === Qt.Key_W && currentIndex1 > 3 && !player1Identify)
                 currentIndex1 -=3
-            else if(e.key === Qt.Key_A && currentIndex1 > 1)
+            else if(e.key === Qt.Key_A && currentIndex1 > 1 && !player1Identify)
                 currentIndex1 -=1
-            else if(e.key === Qt.Key_S && currentIndex1 < 7)
+            else if(e.key === Qt.Key_S && currentIndex1 < 7 && !player1Identify)
                 currentIndex1 = Number(currentIndex1) + 3
-            else if(e.key === Qt.Key_D && currentIndex1 < 9)
+            else if(e.key === Qt.Key_D && currentIndex1 < 9 && !player1Identify)
                 currentIndex1 = Number(currentIndex1) + 1
-            else if(e.key === Qt.Key_Up && currentIndex2 > 3)
+            else if(e.key === Qt.Key_Up && currentIndex2 > 3 && !player2Identify)
                 currentIndex2 -=3
-            else if(e.key === Qt.Key_Left && currentIndex2 > 1)
+            else if(e.key === Qt.Key_Left && currentIndex2 > 1 && !player2Identify)
                 currentIndex2 -=1
-            else if(e.key === Qt.Key_Down && currentIndex2 < 7)
+            else if(e.key === Qt.Key_Down && currentIndex2 < 7 && !player2Identify)
                 currentIndex2 = Number(currentIndex2) + 3
-            else if(e.key === Qt.Key_Right && currentIndex2 < 9)
+            else if(e.key === Qt.Key_Right && currentIndex2 < 9 && !player2Identify)
                 currentIndex2 = Number(currentIndex2) + 1
             else if(e.key === Qt.Key_Enter){
                 player2text.text = player2SelectionName
