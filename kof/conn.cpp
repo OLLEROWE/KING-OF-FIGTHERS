@@ -182,6 +182,19 @@ void Conn::setSentKeys(const QString &newSentKeys)
     emit sentKeysChanged();
 }
 
+int Conn::targetHp() const
+{
+    return m_targetHp;
+}
+
+void Conn::setTargetHp(int newTargetHp)
+{
+    if (m_targetHp == newTargetHp)
+        return;
+    m_targetHp = newTargetHp;
+    emit targetHpChanged();
+}
+
 
 
 void Conn::onSocketReadyRead()
@@ -200,12 +213,11 @@ void Conn::onSocketReadyRead()
         QString userName, message;
         in >> messageType >> userName >> message;
         setTargetName(userName);
-        qDebug() <<"===from ip:" << peerAddr.toString() << "port:" <<QString::number(peerPort) <<"message:" << message;
+//        qDebug() <<"===from ip:" << peerAddr.toString() << "port:" <<QString::number(peerPort) <<"message:" << message;
         switch (messageType) {
-        case 0:{
+        case 0:
             if(!m_isTargetSelectRole)
                 setTargetRoleName(message);
-            }
             break;
         case 1:
             qDebug() << "shoudaoxinxile1";
@@ -213,8 +225,13 @@ void Conn::onSocketReadyRead()
             break;
         case 2:
             setIsTargetSelectRole(true);
+            break;
         case 3:
             m_firstConn = true;
+            break;
+        case 4:
+            setTargetHp(message.toInt());
+            break;
         default:
             break;
         }
