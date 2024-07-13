@@ -359,14 +359,18 @@ Scene {
     Connections{
         target: scene
         function onChanged(){
-            console.log("scene   onKeysChanged")
-            sent_keys = ""
-            sent_keys += clock.time + "|"
-            for(let key of Globals.pressed_keys) {
-              sent_keys += key + "|"
+            if(conn.firstConn){
+                console.log("scene   onKeysChanged")
+                sent_keys = ""
+                sent_keys += clock.time + "|"
+                for(let key of Globals.pressed_keys) {
+                  sent_keys += key + "|"
+                }
+                conn.sendMessage(1,sent_keys)
+                console.log("sendMessage" + sent_keys)
             }
-            conn.sendMessage(1,sent_keys)
-            console.log("sendMessage" + sent_keys)
+
+
         }
     }
 
