@@ -25,7 +25,6 @@ Scene {
         TextField{
             id:port
             text:"6666"
-            enabled: false
         }
         TextField{
             id:targetIp
@@ -34,20 +33,39 @@ Scene {
         TextField{
             id:targetPort
             text:"6666"
-            enabled: false
         }
         Button{
             text:"确定"
             onClicked:{
-                selection()//触发信号
-                conn.setPort(port.text)
-                conn.setTargetIpAndPort(targetIp.text,targetPort.text)
+                conn.port = Number(port.text)
+                conn.targetIp = targetIp.text
+                conn.targetPort = Number(targetPort.text)
+                timer.start()
             }
             Keys.onReturnPressed: {
-                selection()//触发信号
-                conn.setPort(port.text)
-                conn.setTargetIpAndPort(targetIp.text,targetPort.text)
+                conn.port = Number(port.text)
+                conn.targetIp = targetIp.text
+                conn.targetPort = Number(targetPort.text)
+                timer.start()
             }
+        }
+        Timer{
+            id:timer
+            interval: 100
+            repeat: true
+            running: false
+            onTriggered: {
+                console.log(conn.firstConn)
+                if(conn.firstConn){
+                    conn.sendMessage(3,true)
+                    selection()//触发信号
+                    running = false
+                }else{
+                    conn.sendMessage(3,true)
+                    console.log("conn.sendMessage(3,true)")
+                }
+            }
+
         }
 
     }

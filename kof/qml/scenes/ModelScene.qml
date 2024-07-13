@@ -20,7 +20,7 @@ Scene {
         anchors.centerIn: parent
         Button {
             id: btn1
-            text: "asdf"
+            text: "双人对战"
             onClicked: {
                 toBattle();
                 isNetGame = false}
@@ -28,7 +28,7 @@ Scene {
 
         Button {
             id: btn2
-            text: "ljdz"
+            text: "联机模式"
             onClicked: {
                 toNet();
                 isNetGame = true

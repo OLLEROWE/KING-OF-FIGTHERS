@@ -18,6 +18,8 @@ Scene {
 
     signal goSelect
     signal goStart
+    signal changed
+
     JoystickControllerHUD {
         id: joystickController
         x: 100
@@ -57,18 +59,18 @@ Scene {
     }
 
     function newbattle(){
-            message.visible = false
+        message.visible = false
 
-           Globals.player1=null
-           Globals.player2=null
-           console.log("----------------"+Globals.player1.width)
+        Globals.player1=null
+        Globals.player2=null
+        console.log("----------------"+Globals.player1.width)
 
-       }
+    }
 
-//    BackgroundMusic {
-//        id: backgroundMusic
-//        source: Qt.resolvedUrl("../../assets/vedio/bgc.mp3")
-//    }
+    //    BackgroundMusic {
+    //        id: backgroundMusic
+    //        source: Qt.resolvedUrl("../../assets/vedio/bgc.mp3")
+    //    }
     PhysicsWorld {
         id: world
         // physics is disabled initially, and enabled after the splash is finished
@@ -98,7 +100,7 @@ Scene {
             hp2 = gethp2()
             if(hp1 ===0){
                 message.visible = true
-               text.text = "you lose"
+                text.text = "you lose"
             }
             if(hp2 === 0){
                 message.visible = true
@@ -110,66 +112,66 @@ Scene {
     property int hp1: gethp1()
     property int hp2: gethp2()
     Column {
-            id:message
-            width: parent.width/4
-            height: parent.height/6
-              anchors.centerIn: parent
-              spacing: 10
-              visible: false
+        id:message
+        width: parent.width/4
+        height: parent.height/6
+        anchors.centerIn: parent
+        spacing: 10
+        visible: false
 
-              Rectangle {
-                  width: parent.width
-                  height: parent.height
-                  color: "White"
-                  opacity: 0.3
+        Rectangle {
+            width: parent.width
+            height: parent.height
+            color: "White"
+            opacity: 0.3
 
-                  Text {
-                      id:text
-                      text: "chose game again or not!"
-                      anchors.centerIn: parent
-                      color: "white"
-                      font.pointSize: 20
+            Text {
+                id:text
+                text: "chose game again or not!"
+                anchors.centerIn: parent
+                color: "white"
+                font.pointSize: 20
 
-                  }
-              }
+            }
+        }
 
-              Row {
-                  spacing: 20
-                  anchors.horizontalCenter: parent.horizontalCenter
+        Row {
+            spacing: 20
+            anchors.horizontalCenter: parent.horizontalCenter
 
-                  Button {
-                      text: "OK"
-                      onClicked: {
-                          message.visible=false
-                          text.text="chose game again or not!"
-                          hp1=100
-                          hp2 =100
-                          goSelect();
-                          // 在这里添加点击OK按钮时的逻辑
-                          clock.newclock()
-                          Globals.player1=null
-                         Globals.player2=null
+            Button {
+                text: "OK"
+                onClicked: {
+                    message.visible=false
+                    text.text="chose game again or not!"
+                    hp1=100
+                    hp2 =100
+                    goSelect();
+                    // 在这里添加点击OK按钮时的逻辑
+                    clock.newclock()
+                    Globals.player1=null
+                    Globals.player2=null
 
 
-                      }
-                  }
+                }
+            }
 
-                  Button {
-                      text: "Close"
-                      onClicked: {
-                           message.visible=false
-                          text.text="chose game again or not!"
-                          hp1=100
-                          hp2 =100
-                          clock.newclock()
+            Button {
+                text: "Close"
+                onClicked: {
+                    message.visible=false
+                    text.text="chose game again or not!"
+                    hp1=100
+                    hp2 =100
+                    clock.newclock()
 
-                           goStart()
-                           Globals.player1=null
-                          Globals.player2=null
-                      }
-                  }
-              }
-          }
+                    goStart()
+                    Globals.player1=null
+                    Globals.player2=null
+                }
+            }
+        }
+    }
     RowLayout{
         y:30
         width: parent.width
@@ -180,27 +182,27 @@ Scene {
             Layout.fillWidth: true
             onLose: {
                 message.visible= true
-                               text.text="you lose"
+                text.text="you lose"
             }
             name:conn.getUserName()
         }
         Clock{
-                   id:clock
-                   onTimeover: {
-                       message.visible=true
+            id:clock
+            onTimeover: {
+                message.visible=true
 
-                   }
-               }
+            }
+        }
         HealthBar{
             id:player2HpBar
             hp:hp2
             Layout.fillWidth: true
             onLose: {
-                           message.visible= true
+                message.visible= true
 
-                            text.text="you win"
+                text.text="you win"
 
-                       }
+            }
             name:conn.targetName
         }
 
@@ -293,7 +295,7 @@ Scene {
     }
     function create1Character() {
         var component = Qt.createComponent("../entities/" + selectscene.player1SelectionName + ".qml");
-
+        console.log(selectscene.player1SelectionName + "=========selectscene.player1SelectionName")
         if (component.status === Component.Ready) {
 
             var playerObject = component.createObject(scene, {x: scene.width /4});
@@ -318,7 +320,9 @@ Scene {
         }
     }
     function create2Character() {
-        var create2 = Qt.createComponent( "../entities/"+ selectscene.player1SelectionName+".qml" )
+        var create2 = Qt.createComponent( "../entities/"+ selectscene.player2SelectionName+".qml" )
+        console.log(selectscene.player2SelectionName + "=========selectscene.player2SelectionName")
+
         conn = create2
         clock.isRunning = true
         if (create2.status === Component.Ready) {
@@ -341,11 +345,10 @@ Scene {
 
 
 
-
     Keys.onPressed:
-        (e)=>{Controller.pressed_keys.add(e.key);keysChanged();}
+        (e)=>{Controller.pressed_keys.add(e.key);changed();}
     Keys.onReleased:
-        (e)=>{Controller.pressed_keys.delete(e.key);keysChanged()}
+        (e)=>{Controller.pressed_keys.delete(e.key);changed()}
 
 
     Component.onDestruction:Controller.players.length = 0
@@ -354,29 +357,39 @@ Scene {
     property string sent_keys: ""
     Keys.forwardTo:[Globals.player1]
     Connections{
+        target: scene
+        function onChanged(){
+            console.log("scene   onKeysChanged")
+            sent_keys = ""
+            sent_keys += clock.time + "|"
+            for(let key of Globals.pressed_keys) {
+              sent_keys += key + "|"
+            }
+            conn.sendMessage(1,sent_keys)
+            console.log("sendMessage" + sent_keys)
+        }
+    }
+
+    Connections{
         target: Globals.player1
         function onKeysChanged(){
-            sent_keys = ""
-            sent_keys += clock.time + "|"
-            player1.pressed_keys.forEach(function(key) {
-                sent_keys += key + "|"
-            });
-            conn.sendMessage(1,sent_keys)
+            console.log("onKeysChanged")
+
         }
-        function onPositionChanged(){
-            console.log("onPositionChanged")
-            sent_keys = ""
-            sent_keys += clock.time + "|"
-            if(player1.twoAxisController.xAxis > 0.6)
-                sent_keys += Qt.Key_Left + "|"
-            else if(player1.twoAxisController.xAxis < -0.6)
-                sent_keys += Qt.Key_Right + "|"
-            else if(player1.twoAxisController.yAxis > 0.6)
-                sent_keys += Qt.Key_Up + "|"
-            else if(player1.twoAxisController.yAxis < -0.6)
-                sent_keys += Qt.Key_Down + "|"
-            conn.sendMessage(1,sent_keys)
-        }
+//        function onPositionChanged(){
+//            console.log("onPositionChanged")
+//            sent_keys = ""
+//            sent_keys += clock.time + "|"
+//            if(player1.twoAxisController.xAxis > 0.6)
+//                sent_keys += Qt.Key_Left + "|"
+//            else if(player1.twoAxisController.xAxis < -0.6)
+//                sent_keys += Qt.Key_Right + "|"
+//            else if(player1.twoAxisController.yAxis > 0.6)
+//                sent_keys += Qt.Key_Up + "|"
+//            else if(player1.twoAxisController.yAxis < -0.6)
+//                sent_keys += Qt.Key_Down + "|"
+//            conn.sendMessage(1,sent_keys)
+//        }
 
     }
 

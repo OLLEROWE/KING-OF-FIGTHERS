@@ -4,7 +4,7 @@ import QtQuick.Layouts
 import Felgo
 import "../common"
 Scene {
-
+    id:scene
     signal startBattle
     width: parent.width
     height: parent.height
@@ -50,11 +50,14 @@ Scene {
             else if(e.key === Qt.Key_Right && currentIndex2 < 9)
                 currentIndex2 = Number(currentIndex2) + 1
             else if(e.key === Qt.Key_Enter){
-                console.log("aaa")
                 player2text.text = player2SelectionName
                 player2Selection = 0
                 gridViewEnabled = false
                 player2Identify = true
+                player2SelectionName = characterNames[currentIndex2 - 1]
+                console.log(currentIndex2 + "=========currentIndex2")
+                console.log(player2SelectionName + "=========player2SelectionName")
+
             }
             else if(e.key === Qt.Key_Return){
                 console.log("bbb")
@@ -63,6 +66,10 @@ Scene {
                 player1Selection = 0
                 gridViewEnabled = false
                 player1Identify = true
+                player1SelectionName = characterNames[currentIndex1 - 1]
+                console.log(currentIndex1 + "=========currentIndex1")
+                console.log(player1SelectionName + "=========player1SelectionName")
+
             }
             player1Selection = currentIndex1 -1
             player2Selection = currentIndex2 -1
@@ -95,6 +102,10 @@ Scene {
         repeat: true
         running: false
         onTriggered: {
+            if(scene.visible === false){
+                player1Identify = false
+                player2Identify = false
+            }
             countdown--
             if (countdown <= 0) {
                 countdownTimer.stop()
@@ -105,8 +116,9 @@ Scene {
                 player2Identify = true
             if(player1Identify && player2Identify)
                 timer.running = true
-            console.log(player1Identify,player2Identify,"==========",conn.isTargetSelectRole)
+//            console.log(player1Identify,player2Identify,"==========",conn.isTargetSelectRole)
 //            isNetGame ? "../../assets/img/selection/" + (index + 1) + ".jpg" :currentImagePath2
+
         }
     }
     Timer{
@@ -114,7 +126,10 @@ Scene {
         interval: 2000
         repeat: true
         running: false
-        onTriggered: startBattle()
+        onTriggered: {
+            startBattle()
+            running = false
+        }
 
     }
 
