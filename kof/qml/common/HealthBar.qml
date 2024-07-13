@@ -2,6 +2,7 @@ import QtQuick
 import Felgo
 
 Rectangle{
+    id:rc
     property int hp: 100
     property string name
     height: 30
@@ -11,6 +12,7 @@ Rectangle{
     signal lose
     signal win
     Rectangle{
+        id:re
         x:2
         y:2
         color:"orange"
@@ -19,7 +21,9 @@ Rectangle{
         Behavior on width {
             NumberAnimation { duration: 500 }
         }
-        onWidthChanged: if(width === 0) lose()
+
+
+
     }
     Text{
         x:parent.x + parent.width/2
