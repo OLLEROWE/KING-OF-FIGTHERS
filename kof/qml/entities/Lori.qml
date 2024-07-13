@@ -10,6 +10,7 @@ EntityBase {
     property alias collider: _collider
     property int speedx: 400
     property int speedy: 400
+    property var pressed_keys:new Set
     property alias twoAxisController : _twoAxisController
     property alias gameSprite: gameSprite
     property bool isLeftPlayer: true

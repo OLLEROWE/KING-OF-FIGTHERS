@@ -1,7 +1,6 @@
 .pragma library
-let pressed_keys = new Set
 let players = []
-let toFirst = [4,6,7,8,9,10,11,12,13,18,21,22,23,24,25,26,27,28,29,30,31,32,33]
+let toFirst = [4,6,7,8,9,10,11,12,13,18,21,22,23,24,25,26,27,28,29,30,31]
 let toFive = [14,15,16,17,19]
 let jumps = [4,10,11,12,13]
 let attacks = [6,7,8,9,10,11,12,13,14,15,16,17,21,22,23,24,25,26,27,28,29,30]
@@ -15,32 +14,32 @@ function update_move(player){
 function update_control(player,isNetGame,isLeftPlayer){
     let up, left, right, down, A, B, C, D;
     if(isNetGame){
-        up = pressed_keys.has(Qt.Key_Up) || player.twoAxisController.yAxis > 0.6;
-        left = pressed_keys.has(Qt.Key_Left) || player.twoAxisController.xAxis < -0.6;
-        right = pressed_keys.has(Qt.Key_Right) || player.twoAxisController.xAxis > 0.6;
-        down = pressed_keys.has(Qt.Key_Down) || player.twoAxisController.yAxis < -0.6;
-        A = pressed_keys.has(Qt.Key_A)
-        B = pressed_keys.has(Qt.Key_S)
-        C = pressed_keys.has(Qt.Key_D)
-        D = pressed_keys.has(Qt.Key_F)
+        up = player.pressed_keys.has(Qt.Key_Up) || player.twoAxisController.yAxis > 0.6;
+        left = player.pressed_keys.has(Qt.Key_Left) || player.twoAxisController.xAxis < -0.6;
+        right = player.pressed_keys.has(Qt.Key_Right) || player.twoAxisController.xAxis > 0.6;
+        down = player.pressed_keys.has(Qt.Key_Down) || player.twoAxisController.yAxis < -0.6;
+        A = player.pressed_keys.has(Qt.Key_A)
+        B = player.pressed_keys.has(Qt.Key_S)
+        C = player.pressed_keys.has(Qt.Key_D)
+        D = player.pressed_keys.has(Qt.Key_F)
     }else if(!isNetGame && isLeftPlayer){
-        up = pressed_keys.has(Qt.Key_W)
-        left = pressed_keys.has(Qt.Key_A)
-        right = pressed_keys.has(Qt.Key_D)
-        down = pressed_keys.has(Qt.Key_S)
-        A = pressed_keys.has(Qt.Key_U)
-        B = pressed_keys.has(Qt.Key_I)
-        C = pressed_keys.has(Qt.Key_J)
-        D = pressed_keys.has(Qt.Key_K)
+        up = player.pressed_keys.has(Qt.Key_W)
+        left = player.pressed_keys.has(Qt.Key_A)
+        right = player.pressed_keys.has(Qt.Key_D)
+        down = player.pressed_keys.has(Qt.Key_S)
+        A = player.pressed_keys.has(Qt.Key_U)
+        B = player.pressed_keys.has(Qt.Key_I)
+        C = player.pressed_keys.has(Qt.Key_J)
+        D = player.pressed_keys.has(Qt.Key_K)
     }else if(!isNetGame && !isLeftPlayer){
-        up = pressed_keys.has(Qt.Key_Up)
-        left = pressed_keys.has(Qt.Key_Left)
-        right = pressed_keys.has(Qt.Key_Right)
-        down = pressed_keys.has(Qt.Key_Down)
-        A = pressed_keys.has(Qt.Key_1)
-        B = pressed_keys.has(Qt.Key_2)
-        C = pressed_keys.has(Qt.Key_4)
-        D = pressed_keys.has(Qt.Key_5)
+        up = player.pressed_keys.has(Qt.Key_Up)
+        left = player.pressed_keys.has(Qt.Key_Left)
+        right = player.pressed_keys.has(Qt.Key_Right)
+        down = player.pressed_keys.has(Qt.Key_Down)
+        A = player.pressed_keys.has(Qt.Key_1)
+        B = player.pressed_keys.has(Qt.Key_2)
+        C = player.pressed_keys.has(Qt.Key_4)
+        D = player.pressed_keys.has(Qt.Key_5)
     }
 
 
@@ -81,42 +80,84 @@ function update_control(player,isNetGame,isLeftPlayer){
             player.status = 1;
         }
     }else if(player.status === 3){
-        if(A){
-            player.status = 24;
-            player.collider.linearVelocity.x = 0
-        }else if(B){
-            player.status = 23;
-            player.collider.linearVelocity.x = 0
-        }else if(C){
-            player.status = 21;
-            player.collider.linearVelocity.x = 0
-        }else if(D){
-            player.status = 22;
-            player.collider.linearVelocity.x = 0
-        }else if(up){
-            player.status = 5;
-        }else if(!left && !right){
-            player.status = 1;
+        if(isNetGame && !isLeftPlayer){
+            if(A){
+                player.status = 25;
+                player.collider.linearVelocity.x = 0
+            }else if(B){
+                player.status = 26;
+                player.collider.linearVelocity.x = 0
+            }else if(C){
+                player.status = 27;
+                player.collider.linearVelocity.x = 0
+            }else if(D){
+                player.status = 30;
+                player.collider.linearVelocity.x = 0
+            }else if(up){
+                player.status = 5;
+            }else if(!left && !right){
+                player.status = 1;
+            }
+        }else{
+            if(A){
+                player.status = 24;
+                player.collider.linearVelocity.x = 0
+            }else if(B){
+                player.status = 23;
+                player.collider.linearVelocity.x = 0
+            }else if(C){
+                player.status = 21;
+                player.collider.linearVelocity.x = 0
+            }else if(D){
+                player.status = 22;
+                player.collider.linearVelocity.x = 0
+            }else if(up){
+                player.status = 5;
+            }else if(!left && !right){
+                player.status = 1;
+            }
         }
 
     }else if(player.status === 2){
-        if(A){
-            player.status = 25;
-            player.collider.linearVelocity.x = 0
-        }else if(B){
-            player.status = 26;
-            player.collider.linearVelocity.x = 0
-        }else if(C){
-            player.status = 27;
-            player.collider.linearVelocity.x = 0
-        }else if(D){
-            player.status = 30;
-            player.collider.linearVelocity.x = 0
-        }else if(up){
-            player.status = 5;
-        }else if(!left && !right){
-            player.status = 1;
+        if(isNetGame && !isLeftPlayer){
+            if(A){
+                player.status = 24;
+                player.collider.linearVelocity.x = 0
+            }else if(B){
+                player.status = 23;
+                player.collider.linearVelocity.x = 0
+            }else if(C){
+                player.status = 21;
+                player.collider.linearVelocity.x = 0
+            }else if(D){
+                player.status = 22;
+                player.collider.linearVelocity.x = 0
+            }else if(up){
+                player.status = 5;
+            }else if(!left && !right){
+                player.status = 1;
+            }
+        }else{
+            if(A){
+                player.status = 25;
+                player.collider.linearVelocity.x = 0
+            }else if(B){
+                player.status = 26;
+                player.collider.linearVelocity.x = 0
+            }else if(C){
+                player.status = 27;
+                player.collider.linearVelocity.x = 0
+            }else if(D){
+                player.status = 30;
+                player.collider.linearVelocity.x = 0
+            }else if(up){
+                player.status = 5;
+            }else if(!left && !right){
+                player.status = 1;
+            }
         }
+
+
     }
     else if(player.status === 4){
         if(A || B || C || D){
@@ -167,8 +208,8 @@ function render(player,image,count,point){
         player.gameSprite.frameDuration = player.timedelta * 7
 
     if(toFirst.includes(player.status) && player.gameSprite.currentFrame === player.gameSprite.frameCount - 1){
-//        if(player.status === 23 || player.status === 25 || player.status === 26 || player.status === 25 || player.status === 27 || player.status === 30)  player.x += player.gameSprite.width
-//        else if(player.status === 24 ) player.x += player.gameSprite.width / 2
+        //        if(player.status === 23 || player.status === 25 || player.status === 26 || player.status === 25 || player.status === 27 || player.status === 30)  player.x += player.gameSprite.width
+        //        else if(player.status === 24 ) player.x += player.gameSprite.width / 2
         player.status = 1
     }
     if(player.status === 5 && player.gameSprite.currentFrame === player.gameSprite.frameCount - 2){
