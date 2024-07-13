@@ -58,13 +58,22 @@ GameWindow {
             battlescene.newbattle()
         }
         onGoStart: {
-
             gameWindow.state="menu"
             selectscene.newselect()
             battlescene.newbattle()
         }
         onChanged:{
             timer2.start()
+        }
+    }
+    Timer{
+        id:timer1
+        running: battlescene.visible
+        repeat: true
+        interval: 50
+        onTriggered: {
+            conn.sendMessage(4,battleScene.hp2)
+            battleScene.myHp = conn.targetHp
         }
     }
 
